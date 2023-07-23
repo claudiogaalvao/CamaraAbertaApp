@@ -7,17 +7,29 @@ Rapp/src/main/java/com/example/camaraabertaapp/datasource/references/dto/LinkDto
 gapp/src/main/java/com/example/camaraabertaapp/datasource/references/dto/PropositionThemesResponseDto.kt,c/f/cf95a26dc3ffcd0a35542ac98da952e674b87432
 É
 Sapp/src/main/java/com/example/camaraabertaapp/datasource/references/dto/ThemeDto.kt,a/5/a5f6fbc90ee4bc4be7647ee646b9d31d02f1a9bc
-á
-Wapp/src/main/java/com/example/camaraabertaapp/datasource/references/model/ThemeModel.kt,e/d/ed6023d5ab7d1ff7c28538093ded54999bcb35e2
 ù
 mapp/src/main/java/com/example/camaraabertaapp/datasource/references/datasource/IReferencesRemoteDatasource.kt,f/7/f7099457a2a4e17e0f975c8847b579c4e0c10580
 ó
 gapp/src/main/java/com/example/camaraabertaapp/datasource/references/repository/IReferencesRepository.kt,c/f/cfdd852ae29122197a90d9533ed4406babcb70f5
-ó
-gapp/src/main/java/com/example/camaraabertaapp/presentation/preposition_themes/PrepositionThemesState.kt,8/6/86a51343090600e189d6f59192d93ecc9829f0f1
 t
 Dapp/src/main/java/com/example/camaraabertaapp/presentation/Screen.kt,0/4/042b7eb6b79a76c4c11ce95260f576306cf9f457
 x
 Happ/src/main/java/com/example/camaraabertaapp/CamaraAbertaApplication.kt,6/5/65df85ea7f478aa6c658ef4d40599851e82bbbf7
 <
 build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
+m
+=app/src/main/java/com/example/camaraabertaapp/di/AppModule.kt,a/b/abb3df68fdc19f39a8c7ee7db3b990ce14ed2025
+P
+ app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
+ñ
+fapp/src/main/java/com/example/camaraabertaapp/datasource/references/repository/ReferencesRepository.kt,8/e/8ea80344d088bfff56f2f9bd5854b17fa13b6051
+ú
+lapp/src/main/java/com/example/camaraabertaapp/datasource/references/datasource/ReferencesRemoteDatasource.kt,3/4/3403aeb0820725c83e260fd0531c1ae01a9fdf42
+é
+^app/src/main/java/com/example/camaraabertaapp/datasource/references/client/ReferencesClient.kt,a/1/a124833bffbdebb62c354d735683405d25549fed
+|
+Lapp/src/main/java/com/example/camaraabertaapp/presentation/ui/theme/Color.kt,0/b/0b87b340a2e001c52852734354f64b0b05a5f70a
+|
+Lapp/src/main/java/com/example/camaraabertaapp/presentation/ui/theme/Theme.kt,b/1/b102f6975bf5a417b307a30376c2e1aa5d7ba2f8
+@
+app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164

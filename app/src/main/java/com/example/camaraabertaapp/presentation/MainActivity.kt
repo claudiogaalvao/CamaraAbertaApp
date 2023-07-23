@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesScreen
+import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesState
+import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesViewModel
 import com.example.camaraabertaapp.presentation.ui.theme.CamaraAbertaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+
+// Verificar se já passou passou pela selecao de temas
+// Ao clicar em pular, salva no banco que já passou pela selecao e vai para tela principal
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -25,7 +28,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PrepositionThemesScreen()
+                    val viewModel = hiltViewModel<PrepositionThemesViewModel>()
+                    PrepositionThemesScreen(
+                        state = viewModel.state
+                    ) { idTheme ->
+                        viewModel.toggleSelection(idTheme)
+                    }
 //                    val navController = rememberNavController()
 //                    NavHost(
 //                        navController = navController,

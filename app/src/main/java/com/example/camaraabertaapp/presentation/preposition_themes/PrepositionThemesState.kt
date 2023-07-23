@@ -5,5 +5,6 @@ import com.example.camaraabertaapp.datasource.references.model.ThemeModel
 data class PrepositionThemesState(
     val isLoading: Boolean = false,
     val themes: List<ThemeModel> = emptyList(),
-    val error: String = ""
+    val error: String = "",
+    val isButtonEnabled: Boolean = false
 )
