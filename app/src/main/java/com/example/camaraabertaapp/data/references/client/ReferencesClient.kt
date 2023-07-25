@@ -1,6 +1,6 @@
-package com.example.camaraabertaapp.datasource.references.client
+package com.example.camaraabertaapp.data.references.client
 
-import com.example.camaraabertaapp.datasource.references.dto.PropositionThemesResponseDto
+import com.example.camaraabertaapp.data.references.dto.PropositionThemesResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 

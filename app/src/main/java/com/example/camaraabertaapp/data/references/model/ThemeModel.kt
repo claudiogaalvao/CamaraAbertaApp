@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.datasource.references.model
+package com.example.camaraabertaapp.data.references.model
 
 data class ThemeModel(
     val id: String,

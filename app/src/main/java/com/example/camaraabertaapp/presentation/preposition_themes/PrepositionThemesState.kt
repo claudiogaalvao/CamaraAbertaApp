@@ -1,6 +1,6 @@
 package com.example.camaraabertaapp.presentation.preposition_themes
 
-import com.example.camaraabertaapp.datasource.references.model.ThemeModel
+import com.example.camaraabertaapp.data.references.model.ThemeModel
 
 data class PrepositionThemesState(
     val isLoading: Boolean = false,

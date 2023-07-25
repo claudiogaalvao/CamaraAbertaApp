@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.datasource.references.dto
+package com.example.camaraabertaapp.data.references.dto
 
 import com.google.gson.annotations.SerializedName
 

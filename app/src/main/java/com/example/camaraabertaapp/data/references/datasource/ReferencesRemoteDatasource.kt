@@ -1,8 +1,8 @@
-package com.example.camaraabertaapp.datasource.references.datasource
+package com.example.camaraabertaapp.data.references.datasource
 
-import com.example.camaraabertaapp.datasource.references.client.ReferencesClient
-import com.example.camaraabertaapp.datasource.references.dto.toModel
-import com.example.camaraabertaapp.datasource.references.model.ThemeModel
+import com.example.camaraabertaapp.data.references.client.ReferencesClient
+import com.example.camaraabertaapp.data.references.dto.toModel
+import com.example.camaraabertaapp.data.references.model.ThemeModel
 import javax.inject.Inject
 
 class ReferencesRemoteDatasource @Inject constructor(

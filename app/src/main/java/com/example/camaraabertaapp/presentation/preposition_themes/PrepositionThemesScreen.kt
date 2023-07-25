@@ -18,7 +18,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,17 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.camaraabertaapp.datasource.references.model.ThemeModel
+import com.example.camaraabertaapp.data.references.model.ThemeModel
 
 @Composable
 fun PrepositionThemesScreen(
     state: PrepositionThemesState,
-    onClick: (id: String) -> Unit
+    onSelectTheme: (id: String) -> Unit,
+    onProceed: () -> Unit
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
@@ -53,11 +52,10 @@ fun PrepositionThemesScreen(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 TextButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
+                    onClick = onProceed,
+                    modifier = Modifier.align(Alignment.End)
                 ) {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
                         text = "Pular",
                         textAlign = TextAlign.End
                     )
@@ -74,7 +72,7 @@ fun PrepositionThemesScreen(
                 ) {
                     items(state.themes) { theme ->
                         ThemeItem(theme = theme) {
-                            onClick(theme.id)
+                            onSelectTheme(theme.id)
                         }
                     }
                 }
@@ -93,7 +91,7 @@ fun PrepositionThemesScreen(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 12.dp),
                 shape = RoundedCornerShape(8.dp),
-                onClick = { /*TODO*/ },
+                onClick = onProceed,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     disabledContainerColor = Color.LightGray
@@ -153,7 +151,8 @@ fun PrepositionThemesScreenPreview() {
                 ThemeModel(id = "005", "Direitos humanos"),
             )
         ),
-        onClick = {}
+        onSelectTheme = {},
+        onProceed = {}
     )
 }
 

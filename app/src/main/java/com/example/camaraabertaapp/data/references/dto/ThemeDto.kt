@@ -1,6 +1,6 @@
-package com.example.camaraabertaapp.datasource.references.dto
+package com.example.camaraabertaapp.data.references.dto
 
-import com.example.camaraabertaapp.datasource.references.model.ThemeModel
+import com.example.camaraabertaapp.data.references.model.ThemeModel
 import com.google.gson.annotations.SerializedName
 
 data class ThemeDto(

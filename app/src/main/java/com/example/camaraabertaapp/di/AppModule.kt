@@ -1,15 +1,18 @@
 package com.example.camaraabertaapp.di
 
-import com.example.camaraabertaapp.datasource.references.client.ReferencesClient
-import com.example.camaraabertaapp.datasource.references.datasource.IReferencesRemoteDatasource
-import com.example.camaraabertaapp.datasource.references.datasource.ReferencesRemoteDatasource
-import com.example.camaraabertaapp.datasource.references.repository.IReferencesRepository
-import com.example.camaraabertaapp.datasource.references.repository.ReferencesRepository
+import android.content.Context
+import com.example.camaraabertaapp.data.preferences.IPreferences
+import com.example.camaraabertaapp.data.preferences.Preferences
+import com.example.camaraabertaapp.data.references.client.ReferencesClient
+import com.example.camaraabertaapp.data.references.datasource.IReferencesRemoteDatasource
+import com.example.camaraabertaapp.data.references.datasource.ReferencesRemoteDatasource
+import com.example.camaraabertaapp.data.references.repository.IReferencesRepository
+import com.example.camaraabertaapp.data.references.repository.ReferencesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -49,5 +52,15 @@ abstract class RepositoryModule {
     abstract fun provideReferencesRepository(
         datasource: ReferencesRepository
     ): IReferencesRepository
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object PreferencesModule {
+
+    @Singleton
+    @Provides
+    fun providePreferences(@ApplicationContext app: Context): IPreferences = Preferences(app)
 
 }

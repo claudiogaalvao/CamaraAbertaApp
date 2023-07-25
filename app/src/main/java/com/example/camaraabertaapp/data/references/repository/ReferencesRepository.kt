@@ -1,7 +1,7 @@
-package com.example.camaraabertaapp.datasource.references.repository
+package com.example.camaraabertaapp.data.references.repository
 
-import com.example.camaraabertaapp.datasource.references.datasource.IReferencesRemoteDatasource
-import com.example.camaraabertaapp.datasource.references.model.ThemeModel
+import com.example.camaraabertaapp.data.references.datasource.IReferencesRemoteDatasource
+import com.example.camaraabertaapp.data.references.model.ThemeModel
 import javax.inject.Inject
 
 class ReferencesRepository @Inject constructor(
