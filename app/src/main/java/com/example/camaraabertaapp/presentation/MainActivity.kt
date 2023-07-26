@@ -11,14 +11,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.camaraabertaapp.navigation.SetupNavGraph
 import com.example.camaraabertaapp.presentation.events.EventsScreen
 import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesScreen
 import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesViewModel
 import com.example.camaraabertaapp.presentation.ui.theme.CamaraAbertaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-// Verificar se já passou passou pela selecao de temas
-// Ao clicar em pular, salva no banco que já passou pela selecao e vai para tela principal
+// TODO List
+// Solve technical debts
+// Refactor the project to implement best practices
+// - Events
+// - Interfaces
+// - Use cases
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -32,33 +37,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val viewModel = hiltViewModel<PrepositionThemesViewModel>()
-                    val startDestination = if (viewModel.shouldInitFromOnboard) {
-                        Screen.PrepositionThemesScreen.route
-                    } else Screen.EventsScreen.route
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = startDestination
-                    ) {
-                        composable(
-                            route = Screen.PrepositionThemesScreen.route
-                        ) {
-                            PrepositionThemesScreen(
-                                state = viewModel.state,
-                                onSelectTheme = viewModel::toggleSelection,
-                                onProceed = {
-                                    viewModel.saveOnboardFinished()
-                                    navController.navigate(Screen.EventsScreen.route)
-                                }
-                            )
-                        }
-                        composable(
-                            route = Screen.EventsScreen.route
-                        ) {
-                            EventsScreen()
-                        }
-                    }
+                    SetupNavGraph(navController = navController)
                 }
             }
         }
