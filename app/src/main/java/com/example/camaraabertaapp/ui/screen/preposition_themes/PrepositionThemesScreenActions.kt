@@ -1,0 +1,6 @@
+package com.example.camaraabertaapp.ui.screen.preposition_themes
+
+data class PrepositionThemesScreenActions(
+    val onSelectTheme: (id: String) -> Unit,
+    val onProceed: () -> Unit
+)

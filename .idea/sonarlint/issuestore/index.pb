@@ -5,8 +5,6 @@ x
 Happ/src/main/java/com/example/camaraabertaapp/CamaraAbertaApplication.kt,6/5/65df85ea7f478aa6c658ef4d40599851e82bbbf7
 <
 build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
-P
- app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
 |
 Lapp/src/main/java/com/example/camaraabertaapp/presentation/ui/theme/Color.kt,0/b/0b87b340a2e001c52852734354f64b0b05a5f70a
 |
@@ -46,3 +44,9 @@ Qapp/src/main/java/com/example/camaraabertaapp/data/references/model/ThemeModel.
 gapp/src/main/java/com/example/camaraabertaapp/presentation/preposition_themes/PrepositionThemesState.kt,8/6/86a51343090600e189d6f59192d93ecc9829f0f1
 ›
 kapp/src/main/java/com/example/camaraabertaapp/presentation/preposition_themes/PrepositionThemesViewModel.kt,c/f/cf29d36efaccf2d2a5a9aea4ecd33d5a8c1ddd30
+
+Qapp/src/main/java/com/example/camaraabertaapp/presentation/events/EventsScreen.kt,a/3/a3d4427d9ae6f5d5f15da36c9571e51a68381cf1
+˜
+happ/src/main/java/com/example/camaraabertaapp/presentation/preposition_themes/PrepositionThemesScreen.kt,9/5/9539db30ba13e049ea3fb419db9be5046f155b99
+z
+Japp/src/main/java/com/example/camaraabertaapp/presentation/SplashScreen.kt,5/7/5743fbabf813b21abb6252ed292848def52b9578

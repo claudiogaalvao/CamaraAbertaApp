@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.presentation.ui.theme
+package com.example.camaraabertaapp.ui.theme
 
 import android.app.Activity
 import android.os.Build

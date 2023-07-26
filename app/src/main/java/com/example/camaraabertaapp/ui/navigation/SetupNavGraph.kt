@@ -1,16 +1,16 @@
-package com.example.camaraabertaapp.navigation
+package com.example.camaraabertaapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.camaraabertaapp.presentation.Screen
-import com.example.camaraabertaapp.presentation.SplashScreen
-import com.example.camaraabertaapp.presentation.events.EventsScreen
-import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesScreen
-import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesViewModel
+import com.example.camaraabertaapp.ui.screen.Screen
+import com.example.camaraabertaapp.ui.screen.SplashScreen
+import com.example.camaraabertaapp.ui.screen.events.EventsScreen
+import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesScreen
+import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesScreenActions
+import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesViewModel
 
 @Composable
 fun SetupNavGraph(
@@ -33,14 +33,16 @@ fun SetupNavGraph(
         ) {
             PrepositionThemesScreen(
                 state = viewModel.state,
-                onSelectTheme = viewModel::toggleSelection,
-                onProceed = {
-                    viewModel.saveOnboardFinished()
-                    navController.apply {
-                        popBackStack()
-                        navigate(Screen.EventsScreen.route)
+                prepositionThemesScreenActions = PrepositionThemesScreenActions(
+                    onSelectTheme = viewModel::toggleSelection,
+                    onProceed = {
+                        viewModel.saveOnboardFinished()
+                        navController.apply {
+                            popBackStack()
+                            navigate(Screen.EventsScreen.route)
+                        }
                     }
-                }
+                )
             )
         }
         composable(

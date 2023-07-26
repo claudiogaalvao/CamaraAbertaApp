@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.presentation
+package com.example.camaraabertaapp.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,15 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.camaraabertaapp.navigation.SetupNavGraph
-import com.example.camaraabertaapp.presentation.events.EventsScreen
-import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesScreen
-import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesViewModel
-import com.example.camaraabertaapp.presentation.ui.theme.CamaraAbertaAppTheme
+import com.example.camaraabertaapp.ui.navigation.SetupNavGraph
+import com.example.camaraabertaapp.ui.theme.CamaraAbertaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 // TODO List

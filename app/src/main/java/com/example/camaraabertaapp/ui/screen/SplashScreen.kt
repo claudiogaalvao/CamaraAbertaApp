@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.presentation
+package com.example.camaraabertaapp.ui.screen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.camaraabertaapp.presentation.preposition_themes.PrepositionThemesViewModel
+import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesViewModel
 import kotlinx.coroutines.delay
 
 @Composable

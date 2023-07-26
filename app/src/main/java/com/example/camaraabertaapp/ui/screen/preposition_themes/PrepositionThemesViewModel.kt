@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.presentation.preposition_themes
+package com.example.camaraabertaapp.ui.screen.preposition_themes
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

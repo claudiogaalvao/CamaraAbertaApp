@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.presentation.preposition_themes
+package com.example.camaraabertaapp.ui.screen.preposition_themes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +35,7 @@ import com.example.camaraabertaapp.data.references.model.ThemeModel
 @Composable
 fun PrepositionThemesScreen(
     state: PrepositionThemesState,
-    onSelectTheme: (id: String) -> Unit,
-    onProceed: () -> Unit
+    prepositionThemesScreenActions: PrepositionThemesScreenActions
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
@@ -52,7 +51,7 @@ fun PrepositionThemesScreen(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 TextButton(
-                    onClick = onProceed,
+                    onClick = prepositionThemesScreenActions.onProceed,
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text(
@@ -72,7 +71,7 @@ fun PrepositionThemesScreen(
                 ) {
                     items(state.themes) { theme ->
                         ThemeItem(theme = theme) {
-                            onSelectTheme(theme.id)
+                            prepositionThemesScreenActions.onSelectTheme(theme.id)
                         }
                     }
                 }
@@ -91,7 +90,7 @@ fun PrepositionThemesScreen(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 12.dp),
                 shape = RoundedCornerShape(8.dp),
-                onClick = onProceed,
+                onClick = prepositionThemesScreenActions.onProceed,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     disabledContainerColor = Color.LightGray
@@ -151,8 +150,10 @@ fun PrepositionThemesScreenPreview() {
                 ThemeModel(id = "005", "Direitos humanos"),
             )
         ),
-        onSelectTheme = {},
-        onProceed = {}
+        prepositionThemesScreenActions = PrepositionThemesScreenActions(
+            onProceed = {},
+            onSelectTheme = {}
+        )
     )
 }
 
