@@ -9,14 +9,13 @@ import com.example.camaraabertaapp.ui.screen.Screen
 import com.example.camaraabertaapp.ui.screen.SplashScreen
 import com.example.camaraabertaapp.ui.screen.events.EventsScreen
 import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesScreen
-import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesScreenActions
+import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesScreenEvent
 import com.example.camaraabertaapp.ui.screen.preposition_themes.PrepositionThemesViewModel
 
 @Composable
 fun SetupNavGraph(
     navController: NavHostController
 ) {
-    val viewModel = hiltViewModel<PrepositionThemesViewModel>()
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(
             route = Screen.SplashScreen.route
@@ -31,9 +30,10 @@ fun SetupNavGraph(
         composable(
             route = Screen.PrepositionThemesScreen.route
         ) {
+            val viewModel = hiltViewModel<PrepositionThemesViewModel>()
             PrepositionThemesScreen(
                 state = viewModel.state,
-                prepositionThemesScreenActions = PrepositionThemesScreenActions(
+                prepositionThemesScreenEvent = PrepositionThemesScreenEvent(
                     onSelectTheme = viewModel::toggleSelection,
                     onProceed = {
                         viewModel.saveOnboardFinished()

@@ -7,3 +7,4 @@ import androidx.compose.runtime.Composable
 fun EventsScreen() {
     Text(text = "Lista de eventos do dia")
 }
+

@@ -1,4 +1,4 @@
-package com.example.camaraabertaapp.data.references.dto
+package com.example.camaraabertaapp.data.common.dto
 
 data class LinkDto(
     val href: String,

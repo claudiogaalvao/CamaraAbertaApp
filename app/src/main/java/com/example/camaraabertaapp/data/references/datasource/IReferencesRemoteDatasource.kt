@@ -4,6 +4,6 @@ import com.example.camaraabertaapp.data.references.model.ThemeModel
 
 interface IReferencesRemoteDatasource {
 
-    suspend fun getAllPropositionThemes(): Result<List<ThemeModel>>
+    suspend fun getAllPrepositionThemes(): Result<List<ThemeModel>>
 
 }

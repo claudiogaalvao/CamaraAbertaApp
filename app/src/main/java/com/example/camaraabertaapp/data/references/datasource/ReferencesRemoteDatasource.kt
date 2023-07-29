@@ -9,9 +9,9 @@ class ReferencesRemoteDatasource @Inject constructor(
     private val client: ReferencesClient
 ) : IReferencesRemoteDatasource {
 
-    override suspend fun getAllPropositionThemes(): Result<List<ThemeModel>> {
+    override suspend fun getAllPrepositionThemes(): Result<List<ThemeModel>> {
         try {
-            val response = client.getAllPropositionThemes()
+            val response = client.getAllPrepositionThemes()
             if (response.isSuccessful) {
                 return Result.success(response.body()?.data?.map { it.toModel() } ?: emptyList())
             }

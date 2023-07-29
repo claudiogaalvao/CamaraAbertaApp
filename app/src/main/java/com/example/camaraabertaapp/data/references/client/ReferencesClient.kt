@@ -1,14 +1,14 @@
 package com.example.camaraabertaapp.data.references.client
 
-import com.example.camaraabertaapp.data.references.dto.PropositionThemesResponseDto
+import com.example.camaraabertaapp.data.references.dto.PrepositionThemesResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 
-private const val PROPOSITION_REF_BASE_URL = "referencias/proposicoes"
+private const val PREPOSITION_REF_BASE_URL = "referencias/proposicoes"
 
 interface ReferencesClient {
 
-    @GET("$PROPOSITION_REF_BASE_URL/codTema")
-    suspend fun getAllPropositionThemes(): Response<PropositionThemesResponseDto>
+    @GET("$PREPOSITION_REF_BASE_URL/codTema")
+    suspend fun getAllPrepositionThemes(): Response<PrepositionThemesResponseDto>
 
 }

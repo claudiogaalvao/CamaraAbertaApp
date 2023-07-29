@@ -9,7 +9,7 @@ class ReferencesRepository @Inject constructor(
 ) : IReferencesRepository {
 
     override suspend fun getAllPrepositionThemes(): Result<List<ThemeModel>> {
-        return remoteDatasource.getAllPropositionThemes()
+        return remoteDatasource.getAllPrepositionThemes()
     }
 
 }

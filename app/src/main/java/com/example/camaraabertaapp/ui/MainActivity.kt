@@ -15,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 // TODO List
 // Solve technical debts
 // Refactor the project to implement best practices
-// - Events
 // - Interfaces
 // - Use cases
 
