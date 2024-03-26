@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 
+fun getThumbnailUrl(videoId: String): String {
+    return "https://img.youtube.com/vi/$videoId/hqdefault.jpg"
+}
+
 fun Context.openYoutube(videoId: String) {
     val appIntent = Intent(
         Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId")

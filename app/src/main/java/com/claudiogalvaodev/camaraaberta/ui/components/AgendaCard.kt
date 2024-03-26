@@ -1,5 +1,6 @@
 package com.claudiogalvaodev.camaraaberta.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,49 +16,82 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 
 @Composable
 fun AgendaCard(
     modifier: Modifier,
+    color: Color,
     timeStart: String,
-    timeEnd: String,
+    timeEnd: String?,
     title: String,
     type: String,
+    eventStatus: EventStatus,
     local: String,
     onClick: () -> Unit
 ) {
+
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .drawBehind {
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(0f, 0f),
+                    size = size.copy(width = size.width - 20),
+                    cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
+                )
+            }
+            .border(
+                width = if (eventStatus.isInProgress()) 2.dp else 0.dp,
+                color = color,
+                shape = CardDefaults.shape
+            )
+            .padding(start = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccessTime,
-                    contentDescription = Icons.Default.AccessTime.name,
-                    tint = Color(0xFF22A87E)
-                )
-                Text(
-                    text = "$timeStart - $timeEnd",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF22A87E)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccessTime,
+                        contentDescription = Icons.Default.AccessTime.name,
+                        tint = color
+                    )
+                    Text(
+                        text = timeStart + if (timeEnd != null) " - $timeEnd" else "",
+                        fontWeight = FontWeight.Bold,
+                        color = color
+                    )
+                }
+                if (eventStatus.isFinished() || eventStatus.isInProgress()) {
+                    ColoredLabel(
+                        text = eventStatus.text.uppercase(),
+                        backgroundColor = eventStatus.color
+                    )
+                }
             }
 
             Text(
@@ -90,10 +124,12 @@ fun AgendaCard(
 fun AgendaCardPreview() {
     AgendaCard(
         modifier = Modifier,
+        color = Color(0xFF22A87E).copy(alpha = 0.3f),
         timeStart = "09:00",
         timeEnd = "12:00",
         title = "Legislação que regulamenta a profissão de motorista de aplicativo",
         type = "Audiencia Pública",
+        eventStatus = EventStatus.CANCELED,
         local = "Anexo II, Plenário 06",
         onClick = {}
     )

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.ArrowCircleRight
@@ -30,9 +31,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,15 +43,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 import com.claudiogalvaodev.camaraaberta.data.model.Event
 import com.claudiogalvaodev.camaraaberta.data.model.Local
 import com.claudiogalvaodev.camaraaberta.ui.components.AgendaCard
+import com.claudiogalvaodev.camaraaberta.ui.components.BackToTopButton
 import com.claudiogalvaodev.camaraaberta.ui.components.HighlightCard
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.TimelineNode
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
-import com.claudiogalvaodev.camaraaberta.utils.getDate
 import com.claudiogalvaodev.camaraaberta.utils.getTime
 import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
+import com.claudiogalvaodev.camaraaberta.utils.toReadableFullDate
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
@@ -84,9 +90,18 @@ fun EventsScreen(
     onBackToTodayClicked: () -> Unit,
     onEventClicked: (Int) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
     val isBackCurrentDateVisible by remember(currentDate) {
         mutableStateOf(currentDate != LocalDate.now())
     }
+    val isBackToTopVisible by remember {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 }
+    }
+    val isScrolling by remember {
+        derivedStateOf { listState.isScrollInProgress }
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFE5E5E5)
@@ -99,7 +114,10 @@ fun EventsScreen(
             )
 
             Box {
-                LazyColumn {
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(bottom = 64.dp)
+                ) {
                     item {
                         if (ongoingEvents.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(8.dp))
@@ -112,7 +130,7 @@ fun EventsScreen(
                                 Column {
                                     Text(
                                         text = "Acontecendo agora",
-                                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                                        modifier = Modifier.padding(start = 12.dp, bottom = 8.dp),
                                         fontSize = 21.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -120,17 +138,20 @@ fun EventsScreen(
                                     LazyRow(
                                         horizontalArrangement = Arrangement
                                             .spacedBy(8.dp),
-                                        contentPadding = PaddingValues(horizontal = 8.dp)
+                                        contentPadding = PaddingValues(horizontal = 12.dp)
                                     ) {
                                         items(
                                             items = ongoingEvents,
                                             key = { event -> event.id }
-                                        ) {
-                                            HighlightCard(
-                                                title = it.title,
-                                                type = it.descricaoTipo,
-                                                videoLink = it.videoId
-                                            )
+                                        ) { event ->
+                                            event.videoId?.let { videoId ->
+                                                HighlightCard(
+                                                    title = event.title,
+                                                    type = event.descricaoTipo,
+                                                    videoId = videoId,
+                                                    onClick = { onEventClicked(event.id) }
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -152,21 +173,32 @@ fun EventsScreen(
                         items = events,
                         key = { event -> event.id }
                     ) { event ->
+                        val eventStatus = EventStatus.get(event.situacao)
+                        val defaultColor = Color(0xFF22A87E)
+                            .copy(alpha = if (event.isFinished.not()) 1f else 0.3f)
                         TimelineNode(
                             modifier = Modifier.padding(horizontal = 12.dp),
                             isLast = events.last() == event,
-                            isActive = event.isFinished.not()
+                            color = defaultColor
                         ) { modifier ->
                             AgendaCard(
                                 modifier = modifier,
+                                color = defaultColor,
                                 timeStart = event.dataHoraInicio.toLocalDateTime().getTime(),
-                                timeEnd = event.dataHoraFim?.toLocalDateTime()?.getTime() ?: "N/A",
+                                timeEnd = event.dataHoraFim?.toLocalDateTime()?.getTime(),
                                 title = event.title,
                                 type = event.descricaoTipo,
+                                eventStatus = eventStatus,
                                 local = event.local,
                                 onClick = { onEventClicked(event.id) }
                             )
                         }
+                    }
+                }
+
+                BackToTopButton(isVisible = isBackToTopVisible, isScrolling = isScrolling) {
+                    scope.launch {
+                        listState.animateScrollToItem(0)
                     }
                 }
 
@@ -214,7 +246,7 @@ fun Header(
             )
         }
         Text(
-            text = currentDate.getDate().uppercase(),
+            text = currentDate.toReadableFullDate().uppercase(),
             fontSize = 18.sp,
             modifier = Modifier.padding(16.dp),
             color = Color.White

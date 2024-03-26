@@ -9,13 +9,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class EventDetailsViewModel(
+    eventId: Int,
     private val eventsRepository: EventsRepository
 ): ViewModel() {
 
     private val _event = MutableStateFlow<Event?>(null)
     val event: StateFlow<Event?> = _event
 
-    fun getEvent(eventId: Int) = viewModelScope.launch {
+    init {
+        getEvent(eventId)
+    }
+
+    private fun getEvent(eventId: Int) = viewModelScope.launch {
         _event.value = eventsRepository.getEvent(eventId).getOrNull()
     }
 

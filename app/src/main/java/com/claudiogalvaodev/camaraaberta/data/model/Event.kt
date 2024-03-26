@@ -1,5 +1,6 @@
 package com.claudiogalvaodev.camaraaberta.data.model
 
+import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 import com.claudiogalvaodev.camaraaberta.utils.isNotToday
 import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
 
@@ -18,16 +19,16 @@ data class Event(
 ) {
 
     val title: String
-        get() = descricao.substringBefore("\\r")
+        get() = descricao.substringBefore("\r")
 
-    val videoId: String
-        get() = urlRegistro?.substringAfter("v=") ?: ""
+    val videoId: String?
+        get() = urlRegistro?.substringAfter("v=")
 
     val isOnGoing: Boolean
         get() = situacao.uppercase() == "EM ANDAMENTO"
 
     val isFinished: Boolean
-        get() = dataHoraFim != null || dataHoraInicio.toLocalDateTime().isNotToday()
+        get() = dataHoraFim != null || dataHoraInicio.toLocalDateTime().isNotToday() || EventStatus.get(situacao).isFinished()
 
     val local: String
         get() = localExterno ?: localCamara.nome

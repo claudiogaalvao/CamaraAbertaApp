@@ -13,13 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 import com.claudiogalvaodev.camaraaberta.ui.components.AgendaCard
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.defaults.CircleParametersDefaults
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.defaults.LineParametersDefaults
@@ -29,26 +29,20 @@ import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 @Composable
 fun TimelineNode(
     modifier: Modifier,
-    isActive: Boolean,
+    color: Color,
     contentStartOffset: Dp = 12.dp,
     spacer: Dp = 12.dp,
     isLast: Boolean,
     content: @Composable BoxScope.(modifier: Modifier) -> Unit
 ) {
     val lineParameters = remember {
-        LineParametersDefaults.linearGradient(
-            startColor = Color(0xFF22A87E).copy(alpha = if (isActive) 1f else 0.3f),
-            endColor = Color(0xFF22A87E).copy(alpha = if (isActive) 1f else 0.3f)
-        )
+        LineParametersDefaults.linearGradient(startColor = color, endColor = color)
     }
     val circleParameters = remember {
         CircleParametersDefaults.circleParameters(
             radius = 8.dp,
-            backgroundColor = Color(0xFF22A87E).copy(alpha = if (isActive) 1f else 0.3f),
-            stroke = StrokeParameters(
-                color = Color(0xFF22A87E).copy(alpha = if (isActive) 1f else 0.3f),
-                width = 2.dp
-            )
+            backgroundColor = color,
+            stroke = StrokeParameters(color = color, width = 2.dp)
         )
     }
     val iconPainter = circleParameters.icon?.let { painterResource(id = it) }
@@ -114,13 +108,15 @@ private fun TimelinePreview() {
             TimelineNode(
                 modifier = Modifier,
                 isLast = false,
-                isActive = false
+                color = Color(0xFF22A87E).copy(alpha = 0.3f)
             ) { modifier ->
                 AgendaCard(modifier = modifier,
                     timeStart = "9:00",
+                    color = Color(0xFF22A87E).copy(alpha = 0.3f),
                     timeEnd = "10:00",
                     title = "Teste",
                     type = "Teste",
+                    eventStatus = EventStatus.CANCELED,
                     local = "Anexo II, Plenário 06",
                     onClick = {}
                 )
@@ -129,28 +125,16 @@ private fun TimelinePreview() {
             TimelineNode(
                 modifier = Modifier,
                 isLast = false,
-                isActive = true
+                color = Color(0xFF22A87E)
             ) { modifier ->
-                AgendaCard(modifier = modifier,
+                AgendaCard(
+                    modifier = modifier,
+                    color = Color(0xFF22A87E),
                     timeStart = "9:00",
                     timeEnd = "10:00",
                     title = "Teste",
                     type = "Teste",
-                    local = "Anexo II, Plenário 06",
-                    onClick = {}
-                )
-            }
-
-            TimelineNode(
-                modifier = Modifier,
-                isLast = false,
-                isActive = true
-            ) { modifier ->
-                AgendaCard(modifier = modifier,
-                    timeStart = "9:00",
-                    timeEnd = "10:00",
-                    title = "Teste",
-                    type = "Teste",
+                    eventStatus = EventStatus.IN_PROGRESS,
                     local = "Anexo II, Plenário 06",
                     onClick = {}
                 )
@@ -159,13 +143,16 @@ private fun TimelinePreview() {
             TimelineNode(
                 modifier = Modifier,
                 isLast = true,
-                isActive = true
+                color = Color(0xFF22A87E).copy(alpha = 0.3f)
             ) { modifier ->
-                AgendaCard(modifier = modifier,
+                AgendaCard(
+                    modifier = modifier,
+                    color = Color(0xFF22A87E).copy(alpha = 0.3f),
                     timeStart = "9:00",
                     timeEnd = "10:00",
                     title = "Teste",
                     type = "Teste",
+                    eventStatus = EventStatus.FINISHED,
                     local = "Anexo II, Plenário 06",
                     onClick = {}
                 )

@@ -1,7 +1,9 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,21 +19,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.claudiogalvaodev.camaraaberta.R
+import com.claudiogalvaodev.camaraaberta.data.model.Event
+import com.claudiogalvaodev.camaraaberta.data.model.Local
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
+import com.claudiogalvaodev.camaraaberta.utils.getThumbnailUrl
+import com.claudiogalvaodev.camaraaberta.utils.openYoutube
+import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
+import com.claudiogalvaodev.camaraaberta.utils.toReadableFullDate
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private val descricaoMock = "Educação bilíngue de surdos à luz da LDB\\r\\n 1) MARISA DIAS LIMA (Confirmada)\\r\\n   Coordenadora-Geral de Atendimento Especializado\\r\\n   Secretaria de Educação Continuada, Alfabetização de Jovens e Adultos, Diversidade e Inclusão do Ministério da Educação\\r\\n\\r\\n2) REPRESENTANTE \\r\\n   FNDE - Fundo Nacional de Desenvolvimento da Educação\\r\\n\\r\\n3) MESSIAS RAMOS COSTA (Confirmado)\\r\\n   Coordenador substituto\\r\\n   Curso de Língua de Sinais Brasileira - Português como Segunda Língua\\r\\n\\r\\n4) MAGNO PRADO GAMA PRATES (Confirmado)\\r\\n   Vice-presidente\\r\\n   Federação Nacional de Educação e Integração dos Surdos\\r\\n\\r\\n5) RODRIGO ROSSO MARQUES (Confirmado)\\r\\n   Professor Adjunto\\r\\n   Departamento de Libras do Curso de Letras Libras da Universidade Federal de Santa Catarina\\r\\n\\r\\n\\r\\n(REQ. nº 67/2023-CPD, de autoria da deputada Amália Barros)"
 
@@ -39,45 +51,97 @@ private val descricaoMock = "Educação bilíngue de surdos à luz da LDB\\r\\n 
 fun EventDetailsScreen(
     eventId: Int
 ) {
-    val viewModel: EventDetailsViewModel = koinViewModel()
+    val viewModel: EventDetailsViewModel = koinViewModel {
+        parametersOf(eventId)
+    }
     val event by viewModel.event.collectAsState()
 
-    LaunchedEffect(key1 = eventId) {
-        viewModel.getEvent(eventId)
-    }
-
     CamaraAbertaTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(0xFFE5E5E5)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Header(event?.title ?: "")
+        event?.let { EventDetailsScreen(it) }
+    }
+}
 
-                DescriptionSession()
-            }
+@Composable
+fun EventDetailsScreen(
+    event: Event
+) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFFE5E5E5)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Header(
+                title = event.title,
+                status = event.situacao,
+                eventType = event.descricaoTipo,
+                initialDate = event.dataHoraInicio,
+                isFinished = event.isFinished,
+                location = event.local,
+                videoId = event.videoId
+            )
+
+            // DescriptionSession()
         }
     }
 }
 
 @Composable
 fun Header(
-    title: String
+    title: String,
+    status: String,
+    eventType: String,
+    initialDate: String,
+    isFinished: Boolean,
+    location: String,
+    videoId: String?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .background(Color.White)
     ) {
-        AsyncImage(
-            modifier = Modifier
-                .height(250.dp)
-                .fillMaxWidth(),
-            model = "",
-            contentDescription = null,
-            placeholder = ColorPainter(Color.Gray)
-        )
+        Box(
+            modifier = Modifier.clickable {
+                videoId?.let { id -> context.openYoutube(id) }
+            },
+            contentAlignment = Alignment.TopEnd
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .height(250.dp)
+                    .fillMaxWidth(),
+                model = if (LocalInspectionMode.current) "" else {
+                    videoId?.let { id -> getThumbnailUrl(id) } ?: R.drawable.plenario_camara_dos_deputados
+                },
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                placeholder = ColorPainter(Color.Gray)
+            )
+            if (videoId != null) {
+                val color = if (isFinished) Color.DarkGray else Color.Red
+                val text = if (isFinished) "Registro" else "Ao vivo"
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(color, RoundedCornerShape(4.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Videocam,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Text(
+                        text = text.uppercase(),
+                        color = Color.White
+                    )
+                }
+            }
+        }
         Column(
             modifier = Modifier
                 .padding(12.dp),
@@ -92,26 +156,18 @@ fun Header(
                         .fillMaxHeight()
                         .background(Color.DarkGray, RoundedCornerShape(4.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp),
-                    text = "Encerrada".uppercase(),
+                    text = eventType,
+                    fontSize = 16.sp,
                     color = Color.White
                 )
-                Row(
+                Text(
                     modifier = Modifier
                         .fillMaxHeight()
                         .background(Color.DarkGray, RoundedCornerShape(4.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Videocam,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                    Text(
-                        text = "Gravação".uppercase(),
-                        color = Color.White
-                    )
-                }
+                    text = status.uppercase(),
+                    color = Color.White
+                )
             }
             Text(
                 text = title,
@@ -120,12 +176,7 @@ fun Header(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Audiência pública",
-                fontSize = 16.sp,
-                color = Color.DarkGray
-            )
-            Text(
-                text = "HOJE, 30 MAIO • 9:00",
+                text = initialDate.toLocalDateTime().toLocalDate().toReadableFullDate().uppercase(),
                 color = Color(0xFF22A87E),
                 fontWeight = FontWeight.Bold
             )
@@ -134,7 +185,7 @@ fun Header(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Icon(imageVector = Icons.Default.LocationOn, contentDescription = null)
-                Text(text = "Anexo II, Plenário 04")
+                Text(text = location)
             }
         }
     }
@@ -166,8 +217,27 @@ fun DescriptionSession() {
     }
 }
 
+private val eventMock = Event(
+    id = 1,
+    descricao = "Evento 1",
+    descricaoTipo = "Tipo 1",
+    dataHoraInicio = "2024-03-25T11:00",
+    dataHoraFim = "2024-03-25T12:00",
+    localCamara = Local(
+        andar = "1",
+        nome = "A",
+        predio = "B",
+        sala = "1"
+    ),
+    orgaos = emptyList(),
+    localExterno = null,
+    situacao = "Realizado",
+    uri = "",
+    urlRegistro = null
+)
+
 @Composable
 @Preview
 fun EventDetailsScreenPreview() {
-    EventDetailsScreen(1)
+    EventDetailsScreen(eventMock)
 }

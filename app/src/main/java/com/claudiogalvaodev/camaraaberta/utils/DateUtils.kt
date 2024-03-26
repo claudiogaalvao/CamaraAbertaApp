@@ -21,12 +21,17 @@ fun String.toLocalDateTime(): LocalDateTime {
     return LocalDateTime.parse(this, formatter)
 }
 
+fun String.toLocalDate(): LocalDate {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return LocalDate.parse(this, formatter)
+}
+
 fun LocalDateTime.getTime(): String {
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     return this.format(formatter)
 }
 
-fun LocalDate.getDate(): String {
+fun LocalDate.toReadableFullDate(): String {
     val formatter = DateTimeFormatter.ofPattern("EEE, dd MMMM yyyy")
     val dateFormatted = this.format(formatter)
     val partToReplace = dateFormatted.substringBefore(",")

@@ -25,12 +25,13 @@ val dataModule = module {
 }
 
 val viewModelModule = module {
-    single {
+    factory {
         EventsViewModel(get())
     }
 
-    single {
+    factory { (eventId: Int) ->
         EventDetailsViewModel(
+            eventId = eventId,
             eventsRepository = get()
         )
     }

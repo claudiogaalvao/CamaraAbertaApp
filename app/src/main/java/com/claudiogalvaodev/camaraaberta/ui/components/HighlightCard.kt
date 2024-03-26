@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,13 +26,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.claudiogalvaodev.camaraaberta.utils.getThumbnailUrl
 import com.claudiogalvaodev.camaraaberta.utils.openYoutube
 
 @Composable
 fun HighlightCard(
     title: String,
     type: String,
-    videoLink: String
+    videoId: String,
+    onClick: () -> Unit
 ) {
     val context = LocalContext.current
     Column(
@@ -47,9 +48,9 @@ fun HighlightCard(
                     .height(200.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
-                        context.openYoutube(videoLink)
+                        context.openYoutube(videoId)
                     },
-                model = "https://img.youtube.com/vi/$videoLink/hqdefault.jpg",
+                model = getThumbnailUrl(videoId),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 placeholder = ColorPainter(color = Color.Gray)
@@ -67,6 +68,9 @@ fun HighlightCard(
         }
         Spacer(modifier = Modifier.padding(4.dp))
         Text(
+            modifier = Modifier.clickable {
+                onClick()
+            },
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(type)
@@ -85,6 +89,7 @@ fun HighlightCardPreview() {
     HighlightCard(
         title = "Legislação que regulamenta a profissão de motorista de aplicativo",
         type = "Audiência Pública",
-        videoLink = "videoLink"
+        videoId = "videoLink",
+        onClick = {}
     )
 }
