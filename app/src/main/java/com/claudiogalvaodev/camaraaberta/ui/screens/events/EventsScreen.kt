@@ -50,6 +50,8 @@ import com.claudiogalvaodev.camaraaberta.ui.components.AgendaCard
 import com.claudiogalvaodev.camaraaberta.ui.components.BackToTopButton
 import com.claudiogalvaodev.camaraaberta.ui.components.HighlightCard
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.TimelineNode
+import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreen
+import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreenState
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 import com.claudiogalvaodev.camaraaberta.utils.getTime
 import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
@@ -63,17 +65,22 @@ fun EventsScreen(
     navigateToEventDetails: (Int) -> Unit
 ) {
     val viewModel: EventsViewModel = koinViewModel()
-    val events by viewModel.events.collectAsState()
-    val ongoingEvents by viewModel.onGoingEvents.collectAsState()
-    val currentDate by viewModel.currentDate.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val currentDate by viewModel.currentDate.collectAsState(initial = LocalDate.now())
 
-    CamaraAbertaTheme {
+    BaseScreen(
+        state = state,
+        header = {
+            Header(
+                currentDate = currentDate,
+                onPreviousDateClicked = { viewModel.selectPreviousDate() },
+                onNextDateClicked = { viewModel.selectNextDate() }
+            )
+        }
+    ) { data ->
         EventsScreen(
-            events = events,
-            ongoingEvents = ongoingEvents,
+            uiModel = data,
             currentDate = currentDate,
-            onPreviousDateClicked = { viewModel.selectPreviousDate() },
-            onNextDateClicked = { viewModel.selectNextDate() },
             onBackToTodayClicked = { viewModel.resetCurrentDate() },
             onEventClicked = { navigateToEventDetails(it) }
         )
@@ -82,11 +89,8 @@ fun EventsScreen(
 
 @Composable
 fun EventsScreen(
-    events: List<Event>,
-    ongoingEvents: List<Event>,
+    uiModel: EventsUiModel,
     currentDate: LocalDate,
-    onPreviousDateClicked: () -> Unit,
-    onNextDateClicked: () -> Unit,
     onBackToTodayClicked: () -> Unit,
     onEventClicked: (Int) -> Unit
 ) {
@@ -102,122 +106,109 @@ fun EventsScreen(
         derivedStateOf { listState.isScrollInProgress }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE5E5E5)
-    ) {
-        Column {
-            Header(
-                currentDate = currentDate,
-                onPreviousDateClicked = onPreviousDateClicked,
-                onNextDateClicked = onNextDateClicked
-            )
+    Box {
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(bottom = 64.dp)
+        ) {
+            if (uiModel.eventsInProgress.isNotEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White)
+                            .padding(vertical = 21.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = "Acontecendo agora",
+                                modifier = Modifier.padding(start = 12.dp, bottom = 8.dp),
+                                fontSize = 21.sp,
+                                fontWeight = FontWeight.Bold
+                            )
 
-            Box {
-                LazyColumn(
-                    state = listState,
-                    contentPadding = PaddingValues(bottom = 64.dp)
-                ) {
-                    item {
-                        if (ongoingEvents.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(color = Color.White)
-                                    .padding(vertical = 21.dp)
+                            LazyRow(
+                                horizontalArrangement = Arrangement
+                                    .spacedBy(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp)
                             ) {
-                                Column {
-                                    Text(
-                                        text = "Acontecendo agora",
-                                        modifier = Modifier.padding(start = 12.dp, bottom = 8.dp),
-                                        fontSize = 21.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                    LazyRow(
-                                        horizontalArrangement = Arrangement
-                                            .spacedBy(8.dp),
-                                        contentPadding = PaddingValues(horizontal = 12.dp)
-                                    ) {
-                                        items(
-                                            items = ongoingEvents,
-                                            key = { event -> event.id }
-                                        ) { event ->
-                                            event.videoId?.let { videoId ->
-                                                HighlightCard(
-                                                    title = event.title,
-                                                    type = event.descricaoTipo,
-                                                    videoId = videoId,
-                                                    onClick = { onEventClicked(event.id) }
-                                                )
-                                            }
-                                        }
+                                items(
+                                    items = uiModel.eventsInProgress,
+                                    key = { event -> event.id }
+                                ) { event ->
+                                    event.videoId?.let { videoId ->
+                                        HighlightCard(
+                                            title = event.title,
+                                            type = event.descricaoTipo,
+                                            videoId = videoId,
+                                            onClick = { onEventClicked(event.id) }
+                                        )
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(vertical = 8.dp))
                         }
                     }
-
-                    item {
-                        Text(
-                            text = "Agenda do dia",
-                            modifier = Modifier.padding(12.dp),
-                            fontSize = 21.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    items(
-                        items = events,
-                        key = { event -> event.id }
-                    ) { event ->
-                        val eventStatus = EventStatus.get(event.situacao)
-                        val defaultColor = Color(0xFF22A87E)
-                            .copy(alpha = if (event.isFinished.not()) 1f else 0.3f)
-                        TimelineNode(
-                            modifier = Modifier.padding(horizontal = 12.dp),
-                            isLast = events.last() == event,
-                            color = defaultColor
-                        ) { modifier ->
-                            AgendaCard(
-                                modifier = modifier,
-                                color = defaultColor,
-                                timeStart = event.dataHoraInicio.toLocalDateTime().getTime(),
-                                timeEnd = event.dataHoraFim?.toLocalDateTime()?.getTime(),
-                                title = event.title,
-                                type = event.descricaoTipo,
-                                eventStatus = eventStatus,
-                                local = event.local,
-                                onClick = { onEventClicked(event.id) }
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 }
+            }
 
-                BackToTopButton(isVisible = isBackToTopVisible, isScrolling = isScrolling) {
-                    scope.launch {
-                        listState.animateScrollToItem(0)
-                    }
+            item {
+                Text(
+                    text = "Agenda do dia",
+                    modifier = Modifier.padding(12.dp),
+                    fontSize = 21.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            items(
+                items = uiModel.events,
+                key = { event -> event.id }
+            ) { event ->
+                val eventStatus = EventStatus.get(event.situacao)
+                val defaultColor = Color(0xFF22A87E)
+                    .copy(alpha = if (event.isFinished.not()) 1f else 0.3f)
+                TimelineNode(
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    isLast = uiModel.events.last() == event,
+                    color = defaultColor
+                ) { modifier ->
+                    AgendaCard(
+                        modifier = modifier,
+                        color = defaultColor,
+                        timeStart = event.dataHoraInicio.toLocalDateTime().getTime(),
+                        timeEnd = event.dataHoraFim?.toLocalDateTime()?.getTime(),
+                        title = event.title,
+                        type = event.descricaoTipo,
+                        eventStatus = eventStatus,
+                        local = event.local,
+                        onClick = { onEventClicked(event.id) }
+                    )
                 }
+            }
+        }
 
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = isBackCurrentDateVisible,
-                    enter = slideInVertically(),
-                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        BackToTopButton(isVisible = isBackToTopVisible, isScrolling = isScrolling) {
+            scope.launch {
+                listState.animateScrollToItem(0)
+            }
+        }
+
+        androidx.compose.animation.AnimatedVisibility(
+            visible = isBackCurrentDateVisible,
+            enter = slideInVertically(),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = onBackToTodayClicked
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Button(
-                            onClick = onBackToTodayClicked
-                        ) {
-                            Text("Voltar para hoje")
-                        }
-                    }
+                    Text("Voltar para hoje")
                 }
             }
         }
@@ -292,11 +283,11 @@ private fun getEvents(): List<Event> {
 fun EventsScreenPreview() {
     CamaraAbertaTheme {
         EventsScreen(
-            events = getEvents(),
-            ongoingEvents = emptyList(),
+            uiModel = EventsUiModel(
+                events = getEvents(),
+                eventsInProgress = emptyList()
+            ),
             currentDate = LocalDate.now(),
-            onPreviousDateClicked = {},
-            onNextDateClicked = {},
             onBackToTodayClicked = {},
             onEventClicked = {}
         )

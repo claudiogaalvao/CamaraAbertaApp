@@ -24,8 +24,11 @@ data class Event(
     val videoId: String?
         get() = urlRegistro?.substringAfter("v=")
 
-    val isOnGoing: Boolean
-        get() = situacao.uppercase() == "EM ANDAMENTO"
+    val isInProgress: Boolean
+        get() = EventStatus.get(situacao).isInProgress()
+
+    val hasUrlRegistro: Boolean
+        get() = urlRegistro != null
 
     val isFinished: Boolean
         get() = dataHoraFim != null || dataHoraInicio.toLocalDateTime().isNotToday() || EventStatus.get(situacao).isFinished()
