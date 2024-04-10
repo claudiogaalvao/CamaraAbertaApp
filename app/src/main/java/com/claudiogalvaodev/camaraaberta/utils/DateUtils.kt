@@ -1,6 +1,5 @@
 package com.claudiogalvaodev.camaraaberta.utils
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -18,7 +17,6 @@ fun LocalDate.toDateString(): String {
 }
 
 fun String.toLocalDateTime(): LocalDateTime {
-    Log.d("Claudio", "function: $this")
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
     return LocalDateTime.parse(this, formatter)
 }
@@ -51,7 +49,5 @@ fun LocalDateTime.isNotToday(): Boolean {
 }
 
 fun LocalDate.isAfterToday(): Boolean {
-    Log.d("Claudio", "function: $this")
-    Log.d("Claudio", "function: ${LocalDateTime.now()}")
     return this.isAfter(LocalDate.now())
 }

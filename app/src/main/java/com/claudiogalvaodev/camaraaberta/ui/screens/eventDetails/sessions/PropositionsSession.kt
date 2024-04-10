@@ -154,17 +154,13 @@ sealed class PropositionTab(
     val title: String,
     var pauta: List<Pauta>
 ) {
-    data object ToBeAnalyzed: PropositionTab(0, "Propostas a serem analisadas", emptyList())
+    data object ToBeAnalyzed: PropositionTab(0, "Pauta da reunião", emptyList())
     data object Analyzed : PropositionTab(0, "Propostas analisadas", emptyList())
     data object UnAnalyzed : PropositionTab(1, "Propostas não analisadas", emptyList())
 
     companion object {
         fun getTabs(pauta: List<Pauta>, isAfterNow: Boolean): List<PropositionTab> {
-            return if (isAfterNow) {
-                getTabsFutureEvent(pauta)
-            } else {
-                getTabsPastEvent(pauta, pauta)
-            }
+            return getTabsFutureEvent(pauta)
         }
         private fun getTabsFutureEvent(pauta: List<Pauta>): List<PropositionTab> {
             val toBeAnalyzed = ToBeAnalyzed
