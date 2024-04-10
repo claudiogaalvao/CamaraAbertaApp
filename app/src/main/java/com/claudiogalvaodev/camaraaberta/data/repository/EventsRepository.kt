@@ -1,8 +1,8 @@
-package com.claudiogalvaodev.camaraaberta.data
+package com.claudiogalvaodev.camaraaberta.data.repository
 
 import com.claudiogalvaodev.camaraaberta.data.client.Client
-import com.claudiogalvaodev.camaraaberta.data.model.Event
-import java.util.Date
+import com.claudiogalvaodev.camaraaberta.data.model.event.Event
+import com.claudiogalvaodev.camaraaberta.data.model.pauta.Pauta
 
 class EventsRepository(
     private val client: Client
@@ -16,7 +16,7 @@ class EventsRepository(
                 startDate = date,
                 endDate = date
             )
-            Result.success(result.dados)
+            Result.success(result.data)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)
@@ -28,7 +28,19 @@ class EventsRepository(
     ): Result<Event> {
         return try {
             val result = client.getEvent(id)
-            Result.success(result.dados)
+            Result.success(result.data)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getPauta(
+        eventId: Int
+    ): Result<List<Pauta>> {
+        return try {
+            val result = client.getPauta(eventId)
+            Result.success(result.data)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)

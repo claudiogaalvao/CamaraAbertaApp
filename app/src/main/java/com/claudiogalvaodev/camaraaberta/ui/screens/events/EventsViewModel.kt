@@ -2,7 +2,7 @@ package com.claudiogalvaodev.camaraaberta.ui.screens.events
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.claudiogalvaodev.camaraaberta.data.EventsRepository
+import com.claudiogalvaodev.camaraaberta.data.repository.EventsRepository
 import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreenState
 import com.claudiogalvaodev.camaraaberta.utils.toDateString
 import kotlinx.coroutines.flow.Flow

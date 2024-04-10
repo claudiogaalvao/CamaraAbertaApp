@@ -35,10 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.claudiogalvaodev.camaraaberta.R
-import com.claudiogalvaodev.camaraaberta.data.model.Event
-import com.claudiogalvaodev.camaraaberta.data.model.Local
+import com.claudiogalvaodev.camaraaberta.data.model.event.Event
+import com.claudiogalvaodev.camaraaberta.data.model.event.Local
+import com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions.PropositionTab
+import com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions.PropositionsSession
+import com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions.pautaMock
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 import com.claudiogalvaodev.camaraaberta.utils.getThumbnailUrl
+import com.claudiogalvaodev.camaraaberta.utils.isAfterToday
 import com.claudiogalvaodev.camaraaberta.utils.openYoutube
 import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
 import com.claudiogalvaodev.camaraaberta.utils.toReadableFullDate
@@ -54,16 +58,16 @@ fun EventDetailsScreen(
     val viewModel: EventDetailsViewModel = koinViewModel {
         parametersOf(eventId)
     }
-    val event by viewModel.event.collectAsState()
+    val eventDetailsUiModel by viewModel.eventDetailsUiModel.collectAsState()
 
     CamaraAbertaTheme {
-        event?.let { EventDetailsScreen(it) }
+        eventDetailsUiModel?.let { EventDetailsScreen(it) }
     }
 }
 
 @Composable
-fun EventDetailsScreen(
-    event: Event
+private fun EventDetailsScreen(
+    eventDetailsUiModel: EventDetailsUiModel
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -73,14 +77,23 @@ fun EventDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Header(
-                title = event.title,
-                status = event.situacao,
-                eventType = event.descricaoTipo,
-                initialDate = event.dataHoraInicio,
-                isFinished = event.isFinished,
-                location = event.local,
-                videoId = event.videoId
+                title = eventDetailsUiModel.event.title,
+                status = eventDetailsUiModel.event.situacao,
+                eventType = eventDetailsUiModel.event.descricaoTipo,
+                initialDate = eventDetailsUiModel.event.dataHoraInicio,
+                isFinished = eventDetailsUiModel.event.isFinished,
+                location = eventDetailsUiModel.event.local,
+                videoId = eventDetailsUiModel.event.videoId
             )
+
+            if (eventDetailsUiModel.pauta.isNotEmpty()) {
+                PropositionsSession(
+                    tabs = PropositionTab.getTabs(
+                        pauta = eventDetailsUiModel.pauta,
+                        isAfterNow = eventDetailsUiModel.event.dataHoraInicio.toLocalDateTime().toLocalDate().isAfterToday()
+                    )
+                )
+            }
 
             // DescriptionSession()
         }
@@ -88,7 +101,7 @@ fun EventDetailsScreen(
 }
 
 @Composable
-fun Header(
+private fun Header(
     title: String,
     status: String,
     eventType: String,
@@ -192,7 +205,7 @@ fun Header(
 }
 
 @Composable
-fun DescriptionSession() {
+private fun DescriptionSession() {
     Column(
         modifier = Modifier
             .background(Color.White)
@@ -238,6 +251,11 @@ private val eventMock = Event(
 
 @Composable
 @Preview
-fun EventDetailsScreenPreview() {
-    EventDetailsScreen(eventMock)
+private fun EventDetailsScreenPreview() {
+    EventDetailsScreen(
+        EventDetailsUiModel(
+            event = eventMock,
+            pauta = pautaMock
+        )
+    )
 }

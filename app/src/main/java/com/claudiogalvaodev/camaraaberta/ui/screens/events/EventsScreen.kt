@@ -1,9 +1,5 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.events
 
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,18 +17,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.ArrowCircleRight
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -44,14 +35,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
-import com.claudiogalvaodev.camaraaberta.data.model.Event
-import com.claudiogalvaodev.camaraaberta.data.model.Local
+import com.claudiogalvaodev.camaraaberta.data.model.event.Event
+import com.claudiogalvaodev.camaraaberta.data.model.event.Local
 import com.claudiogalvaodev.camaraaberta.ui.components.AgendaCard
 import com.claudiogalvaodev.camaraaberta.ui.components.BackToTopButton
 import com.claudiogalvaodev.camaraaberta.ui.components.HighlightCard
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.TimelineNode
 import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreen
-import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreenState
+import com.claudiogalvaodev.camaraaberta.ui.screens.common.rememberBaseScreenComponentState
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 import com.claudiogalvaodev.camaraaberta.utils.getTime
 import com.claudiogalvaodev.camaraaberta.utils.toLocalDateTime
@@ -68,20 +59,37 @@ fun EventsScreen(
     val state by viewModel.state.collectAsState()
     val currentDate by viewModel.currentDate.collectAsState(initial = LocalDate.now())
 
+    val baseScreenState = rememberBaseScreenComponentState(
+        key = currentDate,
+        isTopButtonVisible = currentDate != LocalDate.now()
+    )
+
     BaseScreen(
-        state = state,
+        state = baseScreenState,
+        contentState = state,
         header = {
             Header(
                 currentDate = currentDate,
                 onPreviousDateClicked = { viewModel.selectPreviousDate() },
                 onNextDateClicked = { viewModel.selectNextDate() }
             )
+        },
+        topButton = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = { viewModel.resetCurrentDate() }
+                ) {
+                    Text("Voltar para hoje")
+                }
+            }
         }
     ) { data ->
         EventsScreen(
             uiModel = data,
-            currentDate = currentDate,
-            onBackToTodayClicked = { viewModel.resetCurrentDate() },
             onEventClicked = { navigateToEventDetails(it) }
         )
     }
@@ -90,15 +98,10 @@ fun EventsScreen(
 @Composable
 fun EventsScreen(
     uiModel: EventsUiModel,
-    currentDate: LocalDate,
-    onBackToTodayClicked: () -> Unit,
     onEventClicked: (Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    val isBackCurrentDateVisible by remember(currentDate) {
-        mutableStateOf(currentDate != LocalDate.now())
-    }
     val isBackToTopVisible by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 0 }
     }
@@ -194,24 +197,6 @@ fun EventsScreen(
                 listState.animateScrollToItem(0)
             }
         }
-
-        androidx.compose.animation.AnimatedVisibility(
-            visible = isBackCurrentDateVisible,
-            enter = slideInVertically(),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = onBackToTodayClicked
-                ) {
-                    Text("Voltar para hoje")
-                }
-            }
-        }
     }
 }
 
@@ -232,7 +217,7 @@ fun Header(
         IconButton(onClick = onPreviousDateClicked) {
             Icon(
                 imageVector = Icons.Default.ArrowCircleLeft,
-                contentDescription = Icons.Default.KeyboardArrowLeft.name,
+                contentDescription = Icons.Default.ArrowCircleLeft.name,
                 tint = Color.White
             )
         }
@@ -245,7 +230,7 @@ fun Header(
         IconButton(onClick = onNextDateClicked) {
             Icon(
                 imageVector = Icons.Default.ArrowCircleRight,
-                contentDescription = Icons.Default.KeyboardArrowRight.name,
+                contentDescription = Icons.Default.ArrowCircleRight.name,
                 tint = Color.White
             )
         }
@@ -285,10 +270,8 @@ fun EventsScreenPreview() {
         EventsScreen(
             uiModel = EventsUiModel(
                 events = getEvents(),
-                eventsInProgress = emptyList()
+                eventsInProgress = getEvents().take(3)
             ),
-            currentDate = LocalDate.now(),
-            onBackToTodayClicked = {},
             onEventClicked = {}
         )
     }

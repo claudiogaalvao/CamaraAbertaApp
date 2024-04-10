@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,8 +38,11 @@ fun HighlightCard(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val cardWidth = configuration.screenWidthDp.dp - 24.dp
+
     Column(
-        modifier = Modifier.width(300.dp)
+        modifier = Modifier.width(cardWidth)
     ) {
         Box(
             contentAlignment = Alignment.TopEnd

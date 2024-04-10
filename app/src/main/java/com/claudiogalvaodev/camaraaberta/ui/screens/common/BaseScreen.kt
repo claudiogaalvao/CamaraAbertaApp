@@ -1,7 +1,14 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.common
 
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -9,45 +16,52 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.claudiogalvaodev.camaraaberta.R
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 
 @Composable
 fun <T : Any> BaseScreen(
-    state: BaseScreenState<T>,
-    header: @Composable () -> Unit = {},
-    content: @Composable (data: T) -> Unit
+    state: BaseScreenComponentState = rememberBaseScreenComponentState(),
+    contentState: BaseScreenState<T>,
+    header: @Composable ColumnScope.() -> Unit = {},
+    topButton: @Composable BoxScope.() -> Unit = {},
+    content: @Composable BoxScope.(data: T) -> Unit
 ) {
     CamaraAbertaTheme {
         Surface {
             Column {
                 header()
-                when(state) {
-                    is BaseScreenState.Loading -> {
-                        // Loading
-                        Loading()
+                Box {
+                    when(contentState) {
+                        is BaseScreenState.Loading -> {
+                            // Loading
+                            Loading()
+                        }
+                        is BaseScreenState.Empty -> {
+                            // Empty
+                            Empty()
+                        }
+                        is BaseScreenState.Error -> {
+                            // Error
+                            Text(text = "Error")
+                        }
+                        is BaseScreenState.Success -> {
+                            content(contentState.data)
+                        }
                     }
-                    is BaseScreenState.Empty -> {
-                        // Empty
-                        Empty()
-                    }
-                    is BaseScreenState.Error -> {
-                        // Error
-                        Text(text = "Error")
-                    }
-                    is BaseScreenState.Success -> {
-                        content(state.data)
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = state.isTopButtonVisible,
+                        enter = slideInVertically(),
+                        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                    ) {
+                        topButton()
                     }
                 }
             }
@@ -73,9 +87,6 @@ private fun Loading() {
 
 @Composable
 private fun Empty() {
-    val lottieComposition by rememberLottieComposition(
-        spec = LottieCompositionSpec.RawRes(R.raw.calendar)
-    )
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,10 +96,6 @@ private fun Empty() {
             modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
             text = "Nenhum evento encontrado para data selecionada!",
             textAlign = TextAlign.Center
-        )
-        LottieAnimation(
-            composition = lottieComposition,
-            iterations = LottieConstants.IterateForever
         )
     }
 }
@@ -107,6 +114,20 @@ private fun Error() {
         )
     }
 }
+
+@Composable
+fun rememberBaseScreenComponentState(
+    key: Any? = null,
+    isTopButtonVisible: Boolean = false
+) = remember(key) {
+    BaseScreenComponentState(
+        isTopButtonVisible = isTopButtonVisible
+    )
+}
+
+class BaseScreenComponentState(
+    val isTopButtonVisible: Boolean = false,
+)
 
 @Composable
 @Preview

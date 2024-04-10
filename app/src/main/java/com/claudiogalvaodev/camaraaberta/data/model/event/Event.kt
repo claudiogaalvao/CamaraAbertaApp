@@ -1,4 +1,4 @@
-package com.claudiogalvaodev.camaraaberta.data.model
+package com.claudiogalvaodev.camaraaberta.data.model.event
 
 import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 import com.claudiogalvaodev.camaraaberta.utils.isNotToday

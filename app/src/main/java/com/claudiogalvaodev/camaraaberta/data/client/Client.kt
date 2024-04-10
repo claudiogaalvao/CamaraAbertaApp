@@ -1,7 +1,8 @@
 package com.claudiogalvaodev.camaraaberta.data.client
 
-import com.claudiogalvaodev.camaraaberta.data.model.EventResponse
-import com.claudiogalvaodev.camaraaberta.data.model.EventsResponse
+import com.claudiogalvaodev.camaraaberta.data.model.common.ApiResponse
+import com.claudiogalvaodev.camaraaberta.data.model.event.Event
+import com.claudiogalvaodev.camaraaberta.data.model.pauta.Pauta
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -14,11 +15,16 @@ interface Client {
         @Query ("ordenarPor") sortBy: String = "dataHoraInicio",
         @Query ("dataInicio") startDate: String,
         @Query ("dataFim") endDate: String
-    ): EventsResponse
+    ): ApiResponse<List<Event>>
 
     @GET("eventos/{id}")
     suspend fun getEvent(
         @Path ("id") id: Int
-    ): EventResponse
+    ): ApiResponse<Event>
+
+    @GET("eventos/{id}/pauta")
+    suspend fun getPauta(
+        @Path ("id") id: Int
+    ): ApiResponse<List<Pauta>>
 
 }

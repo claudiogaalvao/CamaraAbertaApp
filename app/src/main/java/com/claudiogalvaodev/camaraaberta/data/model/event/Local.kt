@@ -1,4 +1,4 @@
-package com.claudiogalvaodev.camaraaberta.data.model
+package com.claudiogalvaodev.camaraaberta.data.model.event
 
 data class Local(
     val andar: Any,
