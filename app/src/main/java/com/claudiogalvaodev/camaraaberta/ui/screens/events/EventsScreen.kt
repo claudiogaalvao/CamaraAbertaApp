@@ -1,6 +1,8 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.events
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,17 +103,17 @@ fun EventsScreen(
     onEventClicked: (Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
+    val parentLazyListState = rememberLazyListState()
     val isBackToTopVisible by remember {
-        derivedStateOf { listState.firstVisibleItemIndex > 0 }
+        derivedStateOf { parentLazyListState.firstVisibleItemIndex > 0 }
     }
     val isScrolling by remember {
-        derivedStateOf { listState.isScrollInProgress }
+        derivedStateOf { parentLazyListState.isScrollInProgress }
     }
 
     Box {
         LazyColumn(
-            state = listState,
+            state = parentLazyListState,
             contentPadding = PaddingValues(bottom = 64.dp)
         ) {
             if (uiModel.eventsInProgress.isNotEmpty()) {
@@ -131,24 +133,8 @@ fun EventsScreen(
                                 fontWeight = FontWeight.Bold
                             )
 
-                            LazyRow(
-                                horizontalArrangement = Arrangement
-                                    .spacedBy(8.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp)
-                            ) {
-                                items(
-                                    items = uiModel.eventsInProgress,
-                                    key = { event -> event.id }
-                                ) { event ->
-                                    event.videoId?.let { videoId ->
-                                        HighlightCard(
-                                            title = event.title,
-                                            type = event.descricaoTipo,
-                                            videoId = videoId,
-                                            onClick = { onEventClicked(event.id) }
-                                        )
-                                    }
-                                }
+                            HighlightOnGoingEvents(eventsInProgress = uiModel.eventsInProgress) { eventId ->
+                                onEventClicked(eventId)
                             }
                         }
                     }
@@ -194,7 +180,7 @@ fun EventsScreen(
 
         BackToTopButton(isVisible = isBackToTopVisible, isScrolling = isScrolling) {
             scope.launch {
-                listState.animateScrollToItem(0)
+                parentLazyListState.animateScrollToItem(0)
             }
         }
     }
@@ -233,6 +219,38 @@ fun Header(
                 contentDescription = Icons.Default.ArrowCircleRight.name,
                 tint = Color.White
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HighlightOnGoingEvents(
+    eventsInProgress: List<Event>,
+    onEventClicked: (Int) -> Unit
+) {
+    val highlightLazyListState = rememberLazyListState()
+    val highlightSnapBehavior = rememberSnapFlingBehavior(lazyListState = highlightLazyListState)
+
+    LazyRow(
+        state = highlightLazyListState,
+        flingBehavior = highlightSnapBehavior,
+        horizontalArrangement = Arrangement
+            .spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp)
+    ) {
+        items(
+            items = eventsInProgress,
+            key = { event -> event.id }
+        ) { event ->
+            event.videoId?.let { videoId ->
+                HighlightCard(
+                    title = event.title,
+                    type = event.descricaoTipo,
+                    videoId = videoId,
+                    onClick = { onEventClicked(event.id) }
+                )
+            }
         }
     }
 }
