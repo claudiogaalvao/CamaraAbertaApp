@@ -24,4 +24,36 @@ data class Proposition(
     val urnFinal: String?
 ) {
     fun getTitle() = "$siglaTipo $numero/$ano"
+
+    companion object {
+        fun getMock(
+            siglaTipo: String,
+            numero: Int,
+            ano: Int,
+            ementa: String,
+            despacho: String
+        ) = Proposition(
+            ano = ano,
+            codTipo = 1,
+            dataApresentacao = "2021-01-01",
+            descricaoTipo = "Projeto de Lei",
+            ementa = ementa,
+            ementaDetalhada = "Ementa Detalhada",
+            id = 1,
+            justificativa = "Justificativa",
+            keywords = "Keywords",
+            numero = numero,
+            siglaTipo = siglaTipo,
+            statusProposicao = StatusProposicao.getMock(despacho),
+            texto = "Texto",
+            uri = "Uri",
+            uriAutores = "Uri Autores",
+            uriOrgaoNumerador = "Uri Orgao Numerador",
+            uriPropAnterior = "Uri Prop Anterior",
+            uriPropPosterior = "Uri Prop Posterior",
+            uriPropPrincipal = "Uri Prop Principal",
+            urlInteiroTeor = "Url Inteiro Teor",
+            urnFinal = "Urn Final"
+        )
+    }
 }

@@ -1,8 +1,10 @@
 package com.claudiogalvaodev.camaraaberta.data.client
 
 import com.claudiogalvaodev.camaraaberta.data.model.common.ApiResponse
+import com.claudiogalvaodev.camaraaberta.data.model.deputados.Deputado
 import com.claudiogalvaodev.camaraaberta.data.model.event.Event
 import com.claudiogalvaodev.camaraaberta.data.model.pauta.Pauta
+import com.claudiogalvaodev.camaraaberta.data.model.proposition.Author
 import com.claudiogalvaodev.camaraaberta.data.model.proposition.Proposition
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -32,5 +34,15 @@ interface Client {
     suspend fun getProposition(
         @Path ("id") id: Int
     ): ApiResponse<Proposition>
+
+    @GET("proposicoes/{id}/autores")
+    suspend fun getPropositionAuthors(
+        @Path ("id") propositionId: Int
+    ): ApiResponse<List<Author>>
+
+    @GET("deputados/{id}")
+    suspend fun getDeputado(
+        @Path ("id") id: Int
+    ): ApiResponse<Deputado>
 
 }

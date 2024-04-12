@@ -7,4 +7,6 @@ data class Author(
     val proponente: Int,
     val tipo: String,
     val uri: String
-)
+) {
+    fun getDeputadoId() = uri.split("/").last().toInt()
+}

@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -44,6 +48,7 @@ import coil.compose.AsyncImage
 import com.claudiogalvaodev.camaraaberta.R
 import com.claudiogalvaodev.camaraaberta.data.enums.BrazilStates
 import com.claudiogalvaodev.camaraaberta.data.model.deputados.Deputado
+import com.claudiogalvaodev.camaraaberta.data.model.proposition.Proposition
 import com.claudiogalvaodev.camaraaberta.ui.components.ColoredLabel
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 import com.claudiogalvaodev.camaraaberta.utils.getThumbnailUrl
@@ -61,15 +66,15 @@ fun PropositionDetailsScreen(
         parametersOf(propositionId)
     }
     val proposition by viewModel.proposition.collectAsState()
+    val authors by viewModel.authors.collectAsState()
+    val ultimoRelator by viewModel.ultimoRelator.collectAsState()
 
     CamaraAbertaTheme {
         proposition?.let { prop ->
             PropositionDetailsScreen(
-                title = prop.getTitle(),
-                status = prop.statusProposicao.descricaoSituacao,
-                lastAppreciation = prop.statusProposicao.dataHora.toLocalDateTime().toLocalDate(),
-                authors = listOf(Deputado.getMock("Deputado(a) Herculano Passos (MDB/SP)", BrazilStates.MG)),
-                ementa = prop.ementa
+                proposition = prop,
+                authors = authors,
+                ultimoRelator = ultimoRelator
             )
         }
     }
@@ -77,11 +82,9 @@ fun PropositionDetailsScreen(
 
 @Composable
 private fun PropositionDetailsScreen(
-    title: String,
-    status: String,
-    lastAppreciation: LocalDate,
+    proposition: Proposition,
     authors: List<Deputado>,
-    ementa: String
+    ultimoRelator: Deputado?
 ) {
     Scaffold(
         topBar = {
@@ -96,24 +99,23 @@ private fun PropositionDetailsScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = title,
+                        text = proposition.getTitle(),
                         fontSize = 28.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Última apreciação: ${lastAppreciation.toReadableFullDate()}",
+                        text = "Última apreciação: ${proposition.statusProposicao.dataHora.toLocalDateTime().toLocalDate().toReadableFullDate()}",
                         color = Color.DarkGray,
                         fontSize = 16.sp
                     )
                     ColoredLabel(
-                        text = status,
+                        text = proposition.statusProposicao.getStatusDescription(),
                         backgroundColor = Color.DarkGray
                     )
                 }
             }
-        },
-        contentWindowInsets = WindowInsets(bottom = 24.dp)
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -121,152 +123,160 @@ private fun PropositionDetailsScreen(
                 .background(Color.LightGray)
                 .padding(innerPadding)
         ) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 12.dp)
                     .fillMaxSize(),
+                contentPadding = PaddingValues(top = 12.dp, bottom = 64.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(12.dp)
-                ) {
-                    Text(
-                        text = "Autores",
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        authors.forEach { author ->
-                            val brazilStateFullName = remember {
-                                BrazilStates.getBrazilStateByAcronym(author.ultimoStatus.siglaUf).fullName
-                            }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                AsyncImage(
-                                    modifier = Modifier
-                                        .size(56.dp)
-                                        .clip(CircleShape),
-                                    model = "https://www.camara.leg.br/internet/deputado/bandep/204554.jpg",
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    placeholder = ColorPainter(Color.Gray)
-                                )
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Text(
-                                        text = "Em ${author.ultimoStatus.situacao.lowercase()}",
-                                        color = Color.DarkGray
-                                    )
-                                    Text(
-                                        text = author.nomeCivil,
-                                        fontSize = 16.sp,
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = "Represente do Estado de $brazilStateFullName",
-                                        color = Color.DarkGray
-                                    )
-                                }
-                            }
-                        }
-                    }
+                item {
+                    InfoMessage(message = proposition.statusProposicao.despacho)
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(12.dp)
-                ) {
-                    Text(
-                        text = "Último relator",
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        val brazilStateFullName = remember {
-                            BrazilStates.getBrazilStateByAcronym(authors[0].ultimoStatus.siglaUf).fullName
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                item {
+                    Session(title = "Autores") {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(CircleShape),
-                                model = "https://www.camara.leg.br/internet/deputado/bandep/204554.jpg",
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                placeholder = ColorPainter(Color.Gray)
-                            )
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Text(
-                                    text = "Em ${authors[0].ultimoStatus.situacao.lowercase()}",
-                                    color = Color.DarkGray
-                                )
-                                Text(
-                                    text = authors[0].nomeCivil,
-                                    fontSize = 16.sp,
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Represente do Estado de $brazilStateFullName",
-                                    color = Color.DarkGray
+                            authors.forEach { author ->
+                                DeputadoItem(
+                                    urlPhoto = author.ultimoStatus.urlFoto,
+                                    name = author.nomeCivil,
+                                    siglaPartido = author.ultimoStatus.siglaPartido,
+                                    siglaUf = author.ultimoStatus.siglaUf,
+                                    situacao = author.ultimoStatus.getSituacaoAtual()
                                 )
                             }
                         }
                     }
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(12.dp)
-                ) {
-                    Text(
-                        text = "Ementa",
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = ementa
-                    )
+                item {
+                    ultimoRelator?.let { relator ->
+                        Session(title = "Último Relator") {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                DeputadoItem(
+                                    urlPhoto = relator.ultimoStatus.urlFoto,
+                                    name = relator.nomeCivil,
+                                    siglaPartido = relator.ultimoStatus.siglaPartido,
+                                    siglaUf = relator.ultimoStatus.siglaUf,
+                                    situacao = relator.ultimoStatus.getSituacaoAtual()
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Session(title = "Ementa") {
+                        Text(
+                            text = proposition.ementa
+                        )
+                    }
                 }
             }
-            Button(
-                onClick = { /*TODO*/ },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                Text(text = "Seguir".uppercase(), color = Color(0xFF22A87E))
-            }
+//            Button(
+//                onClick = { /*TODO*/ },
+//                shape = RoundedCornerShape(8.dp),
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color.White
+//                ),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 12.dp)
+//                    .align(Alignment.BottomCenter)
+//            ) {
+//                Text(text = "Seguir".uppercase(), color = Color(0xFF22A87E))
+//            }
         }
+    }
+}
+
+@Composable
+private fun DeputadoItem(
+    urlPhoto: String,
+    name: String,
+    siglaPartido: String?,
+    siglaUf: String,
+    situacao: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(CircleShape),
+            model = urlPhoto,
+            error = if (LocalInspectionMode.current) null else painterResource(id = R.drawable.ic_person),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            placeholder = ColorPainter(Color.Gray)
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = "Deputado(a) $name (${siglaPartido ?: "Sem partido"} - $siglaUf)",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = situacao,
+                color = Color.DarkGray
+            )
+        }
+    }
+}
+
+@Composable
+private fun Session(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(vertical = 20.dp, horizontal = 12.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 20.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        content()
+    }
+}
+
+@Composable
+private fun InfoMessage(
+    message: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(
+                color = Color(color = 0xFF0000FF).copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = Icons.Default.Warning.name,
+            tint = Color(0xFF0000FF)
+        )
+        Text(
+            text = message,
+            color = Color.Black,
+            fontSize = 14.sp
+        )
     }
 }
 
@@ -274,10 +284,14 @@ private fun PropositionDetailsScreen(
 @Composable
 fun PropositionDetailsScreenPreview() {
     PropositionDetailsScreen(
-        title = "PL 7817/2017",
-        status = "Aguardando Remessa à Sanção",
-        lastAppreciation = LocalDate.of(2024, 4, 9),
-        authors = listOf(Deputado.getMock("Deputado(a) Herculano Passos (MDB/SP)", BrazilStates.MG)),
-        ementa = "Dispõe sobre a obrigatoriedade de criação de mecanismos de levantamento e divulgação da demanda por vagas em creches nos Municípios e no Distrito Federal.\\r\\n\\r\\nNOVA EMENTA: Dispõe sobre a obrigatoriedade de criação de mecanismos de levantamento e de divulgação da demanda por vagas no atendimento à educação infantil de crianças de 0 (zero) a 3 (três) anos de idade."
+        proposition = Proposition.getMock(
+            siglaTipo = "PL",
+            numero = 7817,
+            ano = 2017,
+            ementa = "Dispõe sobre a obrigatoriedade de criação de mecanismos de levantamento e divulgação da demanda por vagas em creches nos Municípios e no Distrito Federal.\\r\\n\\r\\nNOVA EMENTA: Dispõe sobre a obrigatoriedade de criação de mecanismos de levantamento e de divulgação da demanda por vagas no atendimento à educação infantil de crianças de 0 (zero) a 3 (três) anos de idade.",
+            despacho = "Retirado de pauta de ofício, em virtude da ausência do relator."
+        ),
+        authors = listOf(Deputado.getMock("Deputado(a) Herculano Passos", BrazilStates.MG)),
+        ultimoRelator = Deputado.getMock("Deputado(a) Herculano Passos", BrazilStates.MG)
     )
 }
