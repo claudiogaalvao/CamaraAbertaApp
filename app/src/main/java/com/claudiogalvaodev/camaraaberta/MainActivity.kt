@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.EventDetailsScreen
 import com.claudiogalvaodev.camaraaberta.ui.screens.events.EventsScreen
 import com.claudiogalvaodev.camaraaberta.ui.navigation.Screen
+import com.claudiogalvaodev.camaraaberta.ui.screens.propositionDetails.PropositionDetailsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -39,7 +40,29 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 ) { entry ->
-                    EventDetailsScreen(entry.arguments?.getInt("eventId") ?: 0)
+                    EventDetailsScreen(
+                        eventId = entry.arguments?.getInt("eventId") ?: 0,
+                        navigateToPropositionDetails = { propositionId ->
+                            Log.d("Claudio", "Navigate to proposition details: $propositionId")
+                            navController.navigate(
+                                Screen.PropositionDetailsScreen.withArgs(propositionId.toString())
+                            )
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.PropositionDetailsScreen.route + "/{propositionId}",
+                    arguments = listOf(
+                        navArgument("propositionId") {
+                            type = NavType.IntType
+                            defaultValue = 0
+                            nullable = false
+                        }
+                    )
+                ) { entry ->
+                    val propositionId = entry.arguments?.getInt("propositionId") ?: 0
+                    Log.d("Claudio", "Proposition id from arguments: $propositionId")
+                    PropositionDetailsScreen(propositionId = propositionId)
                 }
             }
         }

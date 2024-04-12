@@ -2,7 +2,7 @@ package com.claudiogalvaodev.camaraaberta.data.model.pauta
 
 import kotlin.random.Random
 
-data class Proposicao(
+data class ProposicaoResumida(
     val ano: Int,
     val codTipo: Int,
     val ementa: String,
@@ -14,7 +14,7 @@ data class Proposicao(
     companion object {
         fun getMock(
             ementa: String
-        ) = Proposicao(
+        ) = ProposicaoResumida(
             ano = 1,
             codTipo = 1,
             ementa = ementa,

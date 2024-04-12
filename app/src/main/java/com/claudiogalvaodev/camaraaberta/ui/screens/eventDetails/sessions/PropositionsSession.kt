@@ -1,7 +1,9 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +38,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PropositionsSession(
-    tabs: List<PropositionTab>
+    tabs: List<PropositionTab>,
+    onPropositionClicked: (Int) -> Unit
 ) {
     if (tabs.isEmpty()) return
 
@@ -47,18 +50,6 @@ fun PropositionsSession(
     val lazyListState = rememberLazyListState()
     
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
-    
-//    val pagerState = rememberPagerState {
-//        tabs.size
-//    }
-//
-//    LaunchedEffect(selectedTabIndex) {
-//        pagerState.animateScrollToPage(selectedTabIndex)
-//    }
-//
-//    LaunchedEffect(pagerState.currentPage) {
-//        selectedTabIndex = pagerState.currentPage
-//    }
 
     Column {
         TabRow(selectedTabIndex = selectedTabIndex) {
@@ -97,14 +88,13 @@ fun PropositionsSession(
                 PropositionItem(
                     title = proposition.titulo,
                     topic = proposition.topico,
-                    description = proposition.getLongerEmenta()
+                    description = proposition.getEmenta(),
+                    onClick = {
+                        onPropositionClicked(proposition.getProposicaoId())
+                    }
                 )
             }
         }
-
-//        HorizontalPager(state = pagerState) { index ->
-//
-//        }
     }
 }
 
@@ -112,14 +102,16 @@ fun PropositionsSession(
 private fun PropositionItem(
     title: String,
     topic: String,
-    description: String
+    description: String,
+    onClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val cardWidth = configuration.screenWidthDp.dp - 24.dp
 
     Card(
         modifier = Modifier
-            .width(cardWidth),
+            .width(cardWidth)
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0xFFE5E5E5))
     ) {
         Column(
@@ -204,7 +196,8 @@ val pautaMock = listOf(
 @Preview
 private fun PropositionsSessionPreview() {
     PropositionsSession(
-        tabs = PropositionTab.getTabs(pautaMock, isAfterNow = false)
+        tabs = PropositionTab.getTabs(pautaMock, isAfterNow = false),
+        onPropositionClicked = {}
     )
 }
 
@@ -214,6 +207,7 @@ private fun PropositionItemPreview() {
     PropositionItem(
         title = pautaMock[0].titulo,
         topic = pautaMock[0].topico,
-        description = pautaMock[2].getLongerEmenta()
+        description = pautaMock[2].getEmenta(),
+        onClick = {}
     )
 }

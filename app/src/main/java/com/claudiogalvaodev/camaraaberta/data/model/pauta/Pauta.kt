@@ -6,9 +6,9 @@ data class Pauta(
     val codRegime: Int,
     val ordem: Int,
     @SerializedName("proposicaoRelacionada_")
-    val proposicaoRelacionada: Proposicao?,
+    val proposicaoRelacionada: ProposicaoResumida?,
     @SerializedName("proposicao_")
-    val proposicao: Proposicao,
+    val proposicao: ProposicaoResumida,
     val regime: String,
     val relator: Relator,
     val situacaoItem: String?,
@@ -18,12 +18,12 @@ data class Pauta(
     val uriVotacao: String?
 ) {
     val id = "$ordem-${proposicao.id}"
-    fun getLongerEmenta(): String {
-        return proposicaoRelacionada?.let { relacionada ->
-            if (proposicao.ementa.length > relacionada.ementa.length) {
-                proposicao.ementa
-            } else relacionada.ementa
-        } ?: proposicao.ementa
+
+    fun getProposicaoId(): Int {
+        return proposicaoRelacionada?.id ?: proposicao.id
+    }
+    fun getEmenta(): String {
+        return proposicaoRelacionada?.ementa ?: proposicao.ementa
     }
     companion object {
         fun getMock(
@@ -33,8 +33,8 @@ data class Pauta(
         ) = Pauta(
             codRegime = 1,
             ordem = 1,
-            proposicaoRelacionada = Proposicao.getMock(ementa),
-            proposicao = Proposicao.getMock(ementa),
+            proposicaoRelacionada = ProposicaoResumida.getMock(ementa),
+            proposicao = ProposicaoResumida.getMock(ementa),
             regime = "regime",
             relator = Relator.getMock(),
             situacaoItem = "situacaoItem",

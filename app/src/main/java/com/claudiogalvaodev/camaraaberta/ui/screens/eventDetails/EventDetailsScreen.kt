@@ -53,7 +53,8 @@ private val descricaoMock = "Educação bilíngue de surdos à luz da LDB\\r\\n 
 
 @Composable
 fun EventDetailsScreen(
-    eventId: Int
+    eventId: Int,
+    navigateToPropositionDetails: (Int) -> Unit
 ) {
     val viewModel: EventDetailsViewModel = koinViewModel {
         parametersOf(eventId)
@@ -61,13 +62,19 @@ fun EventDetailsScreen(
     val eventDetailsUiModel by viewModel.eventDetailsUiModel.collectAsState()
 
     CamaraAbertaTheme {
-        eventDetailsUiModel?.let { EventDetailsScreen(it) }
+        eventDetailsUiModel?.let { uiModel ->
+            EventDetailsScreen(
+                eventDetailsUiModel = uiModel,
+                onPropositionClicked = navigateToPropositionDetails
+            )
+        }
     }
 }
 
 @Composable
 private fun EventDetailsScreen(
-    eventDetailsUiModel: EventDetailsUiModel
+    eventDetailsUiModel: EventDetailsUiModel,
+    onPropositionClicked: (Int) -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -91,7 +98,8 @@ private fun EventDetailsScreen(
                     tabs = PropositionTab.getTabs(
                         pauta = eventDetailsUiModel.pauta,
                         isAfterNow = eventDetailsUiModel.event.dataHoraInicio.toLocalDateTime().toLocalDate().isAfterToday()
-                    )
+                    ),
+                    onPropositionClicked = onPropositionClicked
                 )
             }
 
@@ -256,6 +264,7 @@ private fun EventDetailsScreenPreview() {
         EventDetailsUiModel(
             event = eventMock,
             pauta = pautaMock
-        )
+        ),
+        onPropositionClicked = {}
     )
 }

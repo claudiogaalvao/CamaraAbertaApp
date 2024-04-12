@@ -3,6 +3,7 @@ package com.claudiogalvaodev.camaraaberta.data.client
 import com.claudiogalvaodev.camaraaberta.data.model.common.ApiResponse
 import com.claudiogalvaodev.camaraaberta.data.model.event.Event
 import com.claudiogalvaodev.camaraaberta.data.model.pauta.Pauta
+import com.claudiogalvaodev.camaraaberta.data.model.proposition.Proposition
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -26,5 +27,10 @@ interface Client {
     suspend fun getPauta(
         @Path ("id") id: Int
     ): ApiResponse<List<Pauta>>
+
+    @GET("proposicoes/{id}")
+    suspend fun getProposition(
+        @Path ("id") id: Int
+    ): ApiResponse<Proposition>
 
 }
