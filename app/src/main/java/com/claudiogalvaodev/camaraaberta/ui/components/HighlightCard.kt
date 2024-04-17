@@ -35,11 +35,12 @@ fun HighlightCard(
     title: String,
     type: String,
     videoId: String,
+    fullWidth: Boolean = true,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val cardWidth = configuration.screenWidthDp.dp - 24.dp
+    val cardWidth = configuration.screenWidthDp.dp - if (fullWidth) 24.dp else 48.dp
 
     Column(
         modifier = Modifier.width(cardWidth)

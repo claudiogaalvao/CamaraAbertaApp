@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,40 +28,43 @@ import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 fun <T : Any> BaseScreen(
     state: BaseScreenComponentState = rememberBaseScreenComponentState(),
     contentState: BaseScreenState<T>,
-    header: @Composable ColumnScope.() -> Unit = {},
+    header: @Composable () -> Unit = {},
     topButton: @Composable BoxScope.() -> Unit = {},
     content: @Composable BoxScope.(data: T) -> Unit
 ) {
     CamaraAbertaTheme {
-        Surface {
-            Column {
+        Scaffold(
+            topBar = {
                 header()
-                Box {
-                    when(contentState) {
-                        is BaseScreenState.Loading -> {
-                            // Loading
-                            Loading()
-                        }
-                        is BaseScreenState.Empty -> {
-                            // Empty
-                            Empty()
-                        }
-                        is BaseScreenState.Error -> {
-                            // Error
-                            Text(text = "Error")
-                        }
-                        is BaseScreenState.Success -> {
-                            content(contentState.data)
-                        }
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                when(contentState) {
+                    is BaseScreenState.Loading -> {
+                        // Loading
+                        Loading()
                     }
+                    is BaseScreenState.Empty -> {
+                        // Empty
+                        Empty()
+                    }
+                    is BaseScreenState.Error -> {
+                        // Error
+                        Text(text = "Error")
+                    }
+                    is BaseScreenState.Success -> {
+                        content(contentState.data)
+                    }
+                }
 
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = state.isTopButtonVisible,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically() + shrinkVertically() + fadeOut()
-                    ) {
-                        topButton()
-                    }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = state.isTopButtonVisible,
+                    enter = slideInVertically(),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    topButton()
                 }
             }
         }

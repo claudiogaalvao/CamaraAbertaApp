@@ -248,6 +248,7 @@ fun HighlightOnGoingEvents(
                     title = event.title,
                     type = event.descricaoTipo,
                     videoId = videoId,
+                    fullWidth = eventsInProgress.size == 1,
                     onClick = { onEventClicked(event.id) }
                 )
             }

@@ -1,6 +1,5 @@
 package com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -106,7 +105,7 @@ private fun PropositionItem(
     onClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
-    val cardWidth = configuration.screenWidthDp.dp - 24.dp
+    val cardWidth = configuration.screenWidthDp.dp - 48.dp
 
     Card(
         modifier = Modifier
