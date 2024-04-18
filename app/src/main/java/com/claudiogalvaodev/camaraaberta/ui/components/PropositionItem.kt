@@ -20,7 +20,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PropositionItem(
     title: String,
-    topic: String,
+    topic: String? = null,
+    category: String? = null,
     description: String,
     onClick: () -> Unit
 ) {
@@ -43,12 +44,22 @@ fun PropositionItem(
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
-            Text(
-                text = topic,
-                color = Color(0xFF22A87E),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
+            topic?.let {
+                Text(
+                    text = topic,
+                    color = Color(0xFF22A87E),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
+            category?.let {
+                Text(
+                    text = category,
+                    color = Color(0xFF22A87E),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
             Text(
                 text = description,
                 color = Color.DarkGray,

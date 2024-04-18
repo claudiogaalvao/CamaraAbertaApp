@@ -78,7 +78,7 @@ private fun EventDetailsScreen(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE5E5E5)
+        color = Color(0xFFEEEEEE)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)

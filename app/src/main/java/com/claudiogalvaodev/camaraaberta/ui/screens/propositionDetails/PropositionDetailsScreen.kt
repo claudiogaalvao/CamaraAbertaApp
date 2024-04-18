@@ -120,7 +120,7 @@ private fun PropositionDetailsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.LightGray)
+                .background(Color(0xFFEEEEEE))
                 .padding(innerPadding)
         ) {
             LazyColumn(

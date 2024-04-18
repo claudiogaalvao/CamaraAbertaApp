@@ -120,14 +120,15 @@ fun EventsScreen(
         derivedStateOf { parentLazyListState.isScrollInProgress }
     }
 
-    Box {
+    Box(
+        modifier = Modifier.background(Color(0xFFEEEEEE))
+    ) {
         LazyColumn(
             state = parentLazyListState,
-            contentPadding = PaddingValues(bottom = 64.dp)
+            contentPadding = PaddingValues(bottom = 64.dp, top = 12.dp)
         ) {
             if (uiModel.eventsInProgress.isNotEmpty()) {
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -328,7 +329,6 @@ private fun ProjetosDeLeiDoDia(
                     ) { proposicao ->
                         PropositionItem(
                             title = proposicao.getIdentificador(),
-                            topic = "",
                             description = proposicao.ementa
                         ) {
                             onPropositionClicked(proposicao.id)
