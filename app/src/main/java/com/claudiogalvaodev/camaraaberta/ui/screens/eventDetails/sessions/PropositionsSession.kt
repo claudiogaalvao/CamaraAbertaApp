@@ -2,18 +2,14 @@ package com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.sessions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -25,13 +21,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.claudiogalvaodev.camaraaberta.data.model.pauta.Pauta
+import com.claudiogalvaodev.camaraaberta.ui.components.PropositionItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -93,49 +86,6 @@ fun PropositionsSession(
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun PropositionItem(
-    title: String,
-    topic: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    val configuration = LocalConfiguration.current
-    val cardWidth = configuration.screenWidthDp.dp - 48.dp
-
-    Card(
-        modifier = Modifier
-            .width(cardWidth)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE5E5E5))
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Text(
-                text = topic,
-                color = Color(0xFF22A87E),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
-            Text(
-                text = description,
-                color = Color.DarkGray,
-                fontSize = 14.sp,
-                maxLines = 5,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }

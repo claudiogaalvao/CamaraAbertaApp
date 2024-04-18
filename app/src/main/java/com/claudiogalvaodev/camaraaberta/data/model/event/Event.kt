@@ -36,4 +36,11 @@ data class Event(
     val local: String
         get() = localExterno ?: localCamara.nome
 
+    val isDeliberativo: Boolean
+        get() = descricaoTipo.contentEquals("Sessão Deliberativa") ||
+                descricaoTipo.contentEquals("Reunião Deliberativa") ||
+                descricaoTipo.contentEquals("Audiência Pública e Deliberação") ||
+                descricaoTipo.contentEquals("Tomada de Depoimento e Deliberação")
+
+
 }

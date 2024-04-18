@@ -27,7 +27,7 @@ import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 @Composable
 fun <T : Any> BaseScreen(
     state: BaseScreenComponentState = rememberBaseScreenComponentState(),
-    contentState: BaseScreenState<T>,
+    contentState: RequestState<T>,
     header: @Composable () -> Unit = {},
     topButton: @Composable BoxScope.() -> Unit = {},
     content: @Composable BoxScope.(data: T) -> Unit
@@ -42,19 +42,19 @@ fun <T : Any> BaseScreen(
                 modifier = Modifier.padding(innerPadding)
             ) {
                 when(contentState) {
-                    is BaseScreenState.Loading -> {
+                    is RequestState.Loading -> {
                         // Loading
                         Loading()
                     }
-                    is BaseScreenState.Empty -> {
+                    is RequestState.Empty -> {
                         // Empty
                         Empty()
                     }
-                    is BaseScreenState.Error -> {
+                    is RequestState.Error -> {
                         // Error
                         Text(text = "Error")
                     }
-                    is BaseScreenState.Success -> {
+                    is RequestState.Success -> {
                         content(contentState.data)
                     }
                 }

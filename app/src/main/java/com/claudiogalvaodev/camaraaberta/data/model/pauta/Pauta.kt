@@ -25,6 +25,10 @@ data class Pauta(
     fun getEmenta(): String {
         return proposicaoRelacionada?.ementa ?: proposicao.ementa
     }
+    fun getProposicaoResumida(): ProposicaoResumida {
+        return proposicaoRelacionada ?: proposicao
+    }
+
     companion object {
         fun getMock(
             topico: String,

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -33,17 +35,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.claudiogalvaodev.camaraaberta.data.enums.EventStatus
 import com.claudiogalvaodev.camaraaberta.data.model.event.Event
 import com.claudiogalvaodev.camaraaberta.data.model.event.Local
+import com.claudiogalvaodev.camaraaberta.data.model.pauta.ProposicaoResumida
 import com.claudiogalvaodev.camaraaberta.ui.components.AgendaCard
 import com.claudiogalvaodev.camaraaberta.ui.components.BackToTopButton
 import com.claudiogalvaodev.camaraaberta.ui.components.HighlightCard
+import com.claudiogalvaodev.camaraaberta.ui.components.PropositionItem
 import com.claudiogalvaodev.camaraaberta.ui.components.timeline.TimelineNode
 import com.claudiogalvaodev.camaraaberta.ui.screens.common.BaseScreen
+import com.claudiogalvaodev.camaraaberta.ui.screens.common.RequestState
 import com.claudiogalvaodev.camaraaberta.ui.screens.common.rememberBaseScreenComponentState
 import com.claudiogalvaodev.camaraaberta.ui.theme.CamaraAbertaTheme
 import com.claudiogalvaodev.camaraaberta.utils.getTime
@@ -55,7 +61,8 @@ import java.time.LocalDate
 
 @Composable
 fun EventsScreen(
-    navigateToEventDetails: (Int) -> Unit
+    navigateToEventDetails: (Int) -> Unit,
+    navigateToPropositionDetails: (Int) -> Unit
 ) {
     val viewModel: EventsViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
@@ -92,7 +99,8 @@ fun EventsScreen(
     ) { data ->
         EventsScreen(
             uiModel = data,
-            onEventClicked = { navigateToEventDetails(it) }
+            onEventClicked = { navigateToEventDetails(it) },
+            onPropositionClicked = { navigateToPropositionDetails(it) }
         )
     }
 }
@@ -100,7 +108,8 @@ fun EventsScreen(
 @Composable
 fun EventsScreen(
     uiModel: EventsUiModel,
-    onEventClicked: (Int) -> Unit
+    onEventClicked: (Int) -> Unit,
+    onPropositionClicked: (id: Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val parentLazyListState = rememberLazyListState()
@@ -140,6 +149,14 @@ fun EventsScreen(
                     }
                     Spacer(modifier = Modifier.padding(vertical = 8.dp))
                 }
+            }
+
+            item {
+                ProjetosDeLeiDoDia(
+                    propositions = uiModel.projetosDeLeiDoDia,
+                    onPropositionClicked = onPropositionClicked
+                )
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 
             item {
@@ -256,6 +273,93 @@ fun HighlightOnGoingEvents(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ProjetosDeLeiDoDia(
+    propositions: RequestState<List<ProposicaoResumida>>,
+    onPropositionClicked: (id: Int) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.White)
+            .padding(vertical = 21.dp)
+    ) {
+        Text(
+            text = "Projetos de lei do dia",
+            modifier = Modifier.padding(start = 12.dp, bottom = 8.dp),
+            fontSize = 21.sp,
+            fontWeight = FontWeight.Bold
+        )
+        when (propositions) {
+            is RequestState.Loading -> {
+                // Loading
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(48.dp),
+                        color = Color(0xFF22A87E),
+                        trackColor = Color(0xFFE0E0E0)
+                    )
+                }
+            }
+            is RequestState.Success -> {
+                val lazyListState = rememberLazyListState()
+
+                val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
+
+                // Success
+                LazyRow (
+                    state = lazyListState,
+                    flingBehavior = snapBehavior,
+                    horizontalArrangement = Arrangement
+                        .spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) {
+                    items(
+                        items = propositions.data,
+                        key = { proposicao -> proposicao.id }
+                    ) { proposicao ->
+                        PropositionItem(
+                            title = proposicao.getIdentificador(),
+                            topic = "",
+                            description = proposicao.ementa
+                        ) {
+                            onPropositionClicked(proposicao.id)
+                        }
+                    }
+                }
+            }
+            is RequestState.Empty -> {
+                // Empty
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    text = "Nenhum projeto de lei para o dia selecionado",
+                    textAlign = TextAlign.Center
+                )
+            }
+            is RequestState.Error -> {
+                // Error
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    text = "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
 private fun getEvents(): List<Event> {
     val events = mutableListOf<Event>()
     for (i in 1..5) {
@@ -289,9 +393,11 @@ fun EventsScreenPreview() {
         EventsScreen(
             uiModel = EventsUiModel(
                 events = getEvents(),
-                eventsInProgress = getEvents().take(3)
+                eventsInProgress = getEvents().take(3),
+                projetosDeLeiDoDia = RequestState.Empty
             ),
-            onEventClicked = {}
+            onEventClicked = {},
+            onPropositionClicked = {}
         )
     }
 }

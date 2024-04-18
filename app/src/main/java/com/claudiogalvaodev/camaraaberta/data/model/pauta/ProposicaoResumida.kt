@@ -11,6 +11,8 @@ data class ProposicaoResumida(
     val siglaTipo: String,
     val uri: String
 ) {
+    fun isProjetoDeLei() = siglaTipo == "PL"
+    fun getIdentificador() = "$siglaTipo $numero/$ano"
     companion object {
         fun getMock(
             ementa: String

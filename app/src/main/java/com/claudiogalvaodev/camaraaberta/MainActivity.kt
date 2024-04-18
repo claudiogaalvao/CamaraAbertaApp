@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             Scaffold(
                 bottomBar = {
-                    BottomNavigationBar(navController = navController)
+                    // BottomNavigationBar(navController = navController)
                 }
             ) { paddingValues ->
                 NavHost(
@@ -40,6 +40,11 @@ class MainActivity : ComponentActivity() {
                             navigateToEventDetails = { eventId ->
                                 navController.navigate(
                                     Screens.EventDetailsScreen.withArgs(eventId.toString())
+                                )
+                            },
+                            navigateToPropositionDetails = { propositionId ->
+                                navController.navigate(
+                                    Screens.PropositionDetailsScreen.withArgs(propositionId.toString())
                                 )
                             }
                         )
