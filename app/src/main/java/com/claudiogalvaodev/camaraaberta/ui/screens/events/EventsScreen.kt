@@ -34,8 +34,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -316,22 +319,36 @@ private fun ProjetosDeLeiDoDia(
                 val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
 
                 // Success
-                LazyRow (
-                    state = lazyListState,
-                    flingBehavior = snapBehavior,
-                    horizontalArrangement = Arrangement
-                        .spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp)
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(
-                        items = propositions.data,
-                        key = { proposicao -> proposicao.id }
-                    ) { proposicao ->
-                        PropositionItem(
-                            title = proposicao.getIdentificador(),
-                            description = proposicao.ementa
-                        ) {
-                            onPropositionClicked(proposicao.id)
+                    Text(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append(propositions.data.size.toString())
+                            }
+                            append(" projetos de lei")
+                        },
+                        color = Color.Gray
+                    )
+                    LazyRow (
+                        state = lazyListState,
+                        flingBehavior = snapBehavior,
+                        horizontalArrangement = Arrangement
+                            .spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp)
+                    ) {
+                        items(
+                            items = propositions.data,
+                            key = { proposicao -> proposicao.id }
+                        ) { proposicao ->
+                            PropositionItem(
+                                title = proposicao.getIdentificador(),
+                                description = proposicao.ementa
+                            ) {
+                                onPropositionClicked(proposicao.id)
+                            }
                         }
                     }
                 }
