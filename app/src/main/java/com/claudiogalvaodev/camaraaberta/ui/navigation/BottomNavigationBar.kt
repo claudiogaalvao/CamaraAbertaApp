@@ -12,13 +12,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavHostController
+    navController: NavHostController,
+    items: List<BottomNavItem>
 ) {
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination
 
-        bottomNavItems.forEach { navItem ->
+        items.forEach { navItem ->
             NavigationBarItem(
                 selected = currentRoute?.hierarchy?.any { it.route == navItem.route } == true,
                 onClick = {

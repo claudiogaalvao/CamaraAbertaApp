@@ -6,14 +6,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.claudiogalvaodev.camaraaberta.ui.navigation.BottomNavigationBar
 import com.claudiogalvaodev.camaraaberta.ui.navigation.Screens
+import com.claudiogalvaodev.camaraaberta.ui.navigation.bottomNavItems
 import com.claudiogalvaodev.camaraaberta.ui.screens.PropositionsScreen
 import com.claudiogalvaodev.camaraaberta.ui.screens.eventDetails.EventDetailsScreen
 import com.claudiogalvaodev.camaraaberta.ui.screens.events.EventsScreen
@@ -25,9 +29,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.hierarchy?.first()?.route ?: ""
+
             Scaffold(
                 bottomBar = {
-                    // BottomNavigationBar(navController = navController)
+                    if (bottomNavItems.any { it.route == currentRoute}) {
+                        BottomNavigationBar(
+                            navController = navController,
+                            items = bottomNavItems
+                        )
+                    }
                 }
             ) { paddingValues ->
                 NavHost(
