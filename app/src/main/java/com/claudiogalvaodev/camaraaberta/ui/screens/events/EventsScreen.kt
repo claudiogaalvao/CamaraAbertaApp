@@ -3,6 +3,7 @@ package com.claudiogalvaodev.camaraaberta.ui.screens.events
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -29,16 +30,24 @@ import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,6 +80,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(
     navigateToEventDetails: (Int) -> Unit,
@@ -85,12 +95,20 @@ fun EventsScreen(
         isTopButtonVisible = currentDate != LocalDate.now()
     )
 
+    var openDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    LaunchedEffect(key1 = currentDate) {
+        datePickerState.selectedDateMillis = currentDate.toEpochDay() * 86400000
+    }
+
     BaseScreen(
         state = baseScreenState,
         contentState = state,
         header = {
             Header(
                 currentDate = currentDate,
+                onDateClicked = { openDatePicker = true },
                 onPreviousDateClicked = { viewModel.selectPreviousDate() },
                 onNextDateClicked = { viewModel.selectNextDate() }
             )
@@ -106,6 +124,18 @@ fun EventsScreen(
                 ) {
                     Text("Voltar para hoje")
                 }
+            }
+        },
+        dialog = {
+            if (openDatePicker) {
+                DatePickerDialog(
+                    state = datePickerState,
+                    onConfirm = { selectedDate ->
+                        viewModel.selectDate(selectedDate)
+                        openDatePicker = false
+                    },
+                    onDismiss = { openDatePicker = false }
+                )
             }
         }
     ) { data ->
@@ -221,6 +251,7 @@ fun EventsScreen(
 @Composable
 fun Header(
     currentDate: LocalDate,
+    onDateClicked: () -> Unit,
     onPreviousDateClicked: () -> Unit,
     onNextDateClicked: () -> Unit
 ) {
@@ -239,12 +270,14 @@ fun Header(
                 tint = Color.White
             )
         }
-        Text(
-            text = currentDate.toReadableFullDate().uppercase(),
-            fontSize = 18.sp,
-            modifier = Modifier.padding(16.dp),
-            color = Color.White
-        )
+        TextButton(onClick = onDateClicked) {
+            Text(
+                text = currentDate.toReadableFullDate().uppercase(),
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp),
+                color = Color.White
+            )
+        }
         IconButton(onClick = onNextDateClicked) {
             Icon(
                 imageVector = Icons.Default.ArrowCircleRight,
@@ -388,6 +421,39 @@ private fun ProjetosDeLeiDoDia(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialog(
+    state: DatePickerState,
+    onConfirm: (LocalDate) -> Unit,
+    onDismiss: () -> Unit
+) {
+    DatePickerDialog(
+        onDismissRequest = { /*TODO*/ },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    state.selectedDateMillis?.let {
+                        val selectedDate = LocalDate.ofEpochDay(it / 86400000)
+                        onConfirm(selectedDate)
+                    }
+                }
+            ) {
+                Text("Confirmar")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Cancelar")
+            }
+        }
+    ) {
+        DatePicker(state = state)
+    }
+}
+
 private fun getEvents(): List<Event> {
     val events = mutableListOf<Event>()
     for (i in 1..5) {
@@ -436,6 +502,7 @@ fun HeaderPreview() {
     CamaraAbertaTheme {
         Header(
             currentDate = LocalDate.now(),
+            onDateClicked = {},
             onPreviousDateClicked = {},
             onNextDateClicked = {}
         )

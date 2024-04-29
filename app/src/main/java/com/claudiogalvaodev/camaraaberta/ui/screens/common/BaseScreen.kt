@@ -30,6 +30,7 @@ fun <T : Any> BaseScreen(
     contentState: RequestState<T>,
     header: @Composable () -> Unit = {},
     topButton: @Composable BoxScope.() -> Unit = {},
+    dialog: @Composable BoxScope.() -> Unit = {},
     content: @Composable BoxScope.(data: T) -> Unit
 ) {
     CamaraAbertaTheme {
@@ -41,6 +42,7 @@ fun <T : Any> BaseScreen(
             Box(
                 modifier = Modifier.padding(innerPadding)
             ) {
+                dialog()
                 when(contentState) {
                     is RequestState.Loading -> {
                         // Loading

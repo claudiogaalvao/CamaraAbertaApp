@@ -92,6 +92,10 @@ class EventsViewModel(
         _currentDate.value = LocalDate.now()
     }
 
+    fun selectDate(date: LocalDate) {
+        _currentDate.value = date
+    }
+
     fun selectNextDate() {
         _currentDate.value = _currentDate.value.plusDays(1)
     }
